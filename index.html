@@ -13,13 +13,13 @@
       --bg: #000000;
       --text: #ffffff;
       --muted: #d6d6d6;
-      --border: #3a3a3a;
+      --border: #373737;
+      --border-hover: #4a4a4a;
       --input-bg: #efefef;
       --input-text: #111111;
       --yellow: #f6d300;
-      --yellow-soft: rgba(246, 211, 0, 0.18);
       --green: #1ecb5c;
-      --green-soft: rgba(30, 203, 92, 0.18);
+      --green-soft: rgba(30, 203, 92, 0.16);
       --error: #ff6b6b;
     }
 
@@ -157,13 +157,13 @@
         box-shadow 0.22s ease,
         background 0.22s ease,
         transform 0.16s ease;
-      animation: subtleOptionGlow 0.9s ease 1;
+      animation: neutralBreath 1.4s ease-in-out 1;
     }
 
     .answer-btn:hover,
     .answer-btn:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 4px var(--yellow-soft);
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
       outline: none;
       transform: translateY(-1px);
     }
@@ -176,23 +176,26 @@
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      border: 2px solid #cfcfcf;
+      border: 2px solid #d0d0d0;
       flex: 0 0 22px;
       position: relative;
-      transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+      transition:
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
       background: transparent;
     }
 
     .answer-btn.selected {
       border-color: var(--green);
-      background: rgba(30, 203, 92, 0.08);
+      background: rgba(30, 203, 92, 0.07);
       box-shadow: 0 0 0 4px var(--green-soft);
     }
 
     .answer-btn.selected .answer-radio {
       border-color: var(--green);
       background: var(--green);
-      box-shadow: 0 0 0 5px rgba(30, 203, 92, 0.16);
+      box-shadow: 0 0 0 5px rgba(30, 203, 92, 0.14);
     }
 
     .answer-btn.selected .answer-radio::after {
@@ -204,7 +207,7 @@
     }
 
     .answer-btn.confirming {
-      animation: confirmPulse 0.55s ease 2;
+      animation: confirmPulse 0.5s ease 2;
     }
 
     .answer-text {
@@ -226,18 +229,22 @@
       line-height: 1.5;
     }
 
-    @keyframes subtleOptionGlow {
+    .warning-note {
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #cfcfcf;
+    }
+
+    @keyframes neutralBreath {
       0% {
-        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
-        border-color: var(--border);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
       }
-      45% {
-        box-shadow: 0 0 0 4px rgba(246, 211, 0, 0.10);
-        border-color: rgba(246, 211, 0, 0.55);
+      50% {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
       }
       100% {
-        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
-        border-color: var(--border);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
       }
     }
 
@@ -334,7 +341,7 @@
         options: [
           { label: "Preciso para esta semana.", short: "Esta semana", next: "p7" },
           { label: "Preciso para este mês.", short: "Este mês", next: "p7" },
-          { label: "Estou pesquisando preços e taxas.", short: "Pesquisando", next: "p7" }
+          { label: "Estou pesquisando preços e taxas.", short: "Pesq. preç. e tx", next: "p7" }
         ]
       },
 
@@ -541,7 +548,13 @@
 
           <div class="result-box">
             <div><strong>Nome:</strong> ${escapeHtml(state.lead.nome)}</div>
-            <div class="small-note">Suas respostas foram organizadas para facilitar o atendimento.</div>
+            <div class="small-note">
+              Suas respostas foram organizadas para facilitar o atendimento.
+            </div>
+            <div class="warning-note">
+              ⚠️ Não apague a mensagem automática que será enviada no WhatsApp.
+              Ela ajuda a agilizar e facilitar o seu atendimento.
+            </div>
           </div>
 
           <button class="button" id="btnWhatsQualified">ENVIAR MENSAGEM</button>
@@ -558,7 +571,7 @@
           final_type: "qualified"
         });
 
-        openWhatsApp();
+        openWhatsApp("qualified");
       });
     }
 
@@ -589,7 +602,7 @@
           final_type: "disqualified"
         });
 
-        openWhatsApp();
+        openWhatsApp("disqualified");
       });
     }
 
@@ -619,13 +632,17 @@
       });
     }
 
-    function openWhatsApp() {
-      const message = buildWhatsAppMessage();
+    function openWhatsApp(type) {
+      const message = buildWhatsAppMessage(type);
       const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.location.href = url;
     }
 
-    function buildWhatsAppMessage() {
+    function buildWhatsAppMessage(type) {
+      if (type === "disqualified") {
+        return `Olá! Preenchi seu formulário e não atendi os requisitos para PagBank.\n\nQuero saber sobre outras maquininhas.\n\nNome: ${state.lead.nome}`;
+      }
+
       const lines = [];
 
       lines.push("Olá! Vim pelo seu site e respondi o formulário.");
@@ -638,7 +655,7 @@
       if (state.answers.p3) lines.push(`Já teve Pag: ${state.answers.p3}`);
       if (state.answers.p4) lines.push(`CPF/CNPJ apto: ${state.answers.p4}`);
       if (state.answers.p5) lines.push(`Fat.: ${state.answers.p5}`);
-      if (state.answers.p6) lines.push(`Quando pret. comp.: ${state.answers.p6}`);
+      if (state.answers.p6) lines.push(`Qnd pret. comp.: ${state.answers.p6}`);
       if (state.answers.p7) lines.push(`Valor disp.: ${state.answers.p7}`);
 
       return lines.join("\n");
@@ -686,7 +703,7 @@
       const numero = value.slice(2);
       const thirdDigit = value.charAt(2);
 
-      const dddsInvalidos = ["00","01","02","03","04","05","06","07","08","09","10"];
+      const dddsInvalidos = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"];
 
       const sequenciasBloqueadas = [
         "123456789",
