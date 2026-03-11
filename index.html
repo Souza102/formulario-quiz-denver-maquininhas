@@ -11,10 +11,9 @@
 
     :root {
       --bg: #000000;
-      --card: #101010;
       --text: #ffffff;
       --muted: #d6d6d6;
-      --border: #363636;
+      --border: #3a3a3a;
       --input-bg: #efefef;
       --input-text: #111111;
       --yellow: #f6d300;
@@ -37,13 +36,9 @@
       margin: 0 auto;
     }
 
-    .card {
-      width: 100%;
-    }
-
     h1, h2 {
       margin: 0 0 12px;
-      line-height: 1.15;
+      line-height: 1.14;
       font-weight: 800;
     }
 
@@ -89,8 +84,8 @@
     }
 
     input:focus {
-      border-color: var(--yellow);
-      background: #fff;
+      border-color: #007aff;
+      background: #ffffff;
     }
 
     .error {
@@ -116,7 +111,7 @@
       padding: 20px 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease;
     }
 
     .button:active {
@@ -125,13 +120,13 @@
 
     .button-secondary {
       background: #181818;
-      color: #fff;
+      color: #ffffff;
       border: 1px solid #303030;
     }
 
     .question-title {
       font-size: 30px;
-      line-height: 1.22;
+      line-height: 1.2;
       margin-bottom: 12px;
       font-weight: 800;
     }
@@ -146,8 +141,8 @@
     .answer-btn {
       width: 100%;
       border: 2px solid var(--border);
-      background: #0f0f0f;
-      color: #fff;
+      background: #0d0d0d;
+      color: #ffffff;
       border-radius: 18px;
       padding: 18px 16px;
       font-size: 18px;
@@ -162,7 +157,7 @@
         box-shadow 0.22s ease,
         background 0.22s ease,
         transform 0.16s ease;
-      animation: subtleGlow 1s ease 1;
+      animation: subtleOptionGlow 0.9s ease 1;
     }
 
     .answer-btn:hover,
@@ -181,7 +176,7 @@
       width: 22px;
       height: 22px;
       border-radius: 50%;
-      border: 2px solid #c9c9c9;
+      border: 2px solid #cfcfcf;
       flex: 0 0 22px;
       position: relative;
       transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
@@ -205,7 +200,7 @@
       position: absolute;
       inset: 5px;
       border-radius: 50%;
-      background: #fff;
+      background: #ffffff;
     }
 
     .answer-btn.confirming {
@@ -231,18 +226,14 @@
       line-height: 1.5;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    @keyframes subtleGlow {
+    @keyframes subtleOptionGlow {
       0% {
         box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
         border-color: var(--border);
       }
       45% {
         box-shadow: 0 0 0 4px rgba(246, 211, 0, 0.10);
-        border-color: rgba(246, 211, 0, 0.5);
+        border-color: rgba(246, 211, 0, 0.55);
       }
       100% {
         box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
@@ -261,7 +252,7 @@
 </head>
 <body>
   <div class="container">
-    <div class="card" id="app"></div>
+    <div id="app"></div>
   </div>
 
   <script>
@@ -388,7 +379,7 @@
 
     function renderLeadForm() {
       app.innerHTML = `
-        <div id="leadFormWrapper">
+        <div>
           <h1>${CONFIG.titleLeadForm}</h1>
           <div class="subtitle">${CONFIG.subtitleLeadForm}</div>
 
@@ -472,7 +463,6 @@
         });
 
         await sendToAppsScript("lead_form_completed");
-
         state.currentStep = "p1";
         render();
       });
@@ -514,7 +504,6 @@
           });
 
           btn.classList.add("selected", "confirming");
-
           state.answers[step] = selected.short;
 
           pushDataLayerEvent("quiz_answer", {
@@ -552,9 +541,7 @@
 
           <div class="result-box">
             <div><strong>Nome:</strong> ${escapeHtml(state.lead.nome)}</div>
-            <div class="small-note">
-              Suas respostas foram organizadas para facilitar o atendimento.
-            </div>
+            <div class="small-note">Suas respostas foram organizadas para facilitar o atendimento.</div>
           </div>
 
           <button class="button" id="btnWhatsQualified">ENVIAR MENSAGEM</button>
@@ -571,7 +558,7 @@
           final_type: "qualified"
         });
 
-        openWhatsApp("qualified");
+        openWhatsApp();
       });
     }
 
@@ -602,7 +589,7 @@
           final_type: "disqualified"
         });
 
-        openWhatsApp("disqualified");
+        openWhatsApp();
       });
     }
 
@@ -632,13 +619,13 @@
       });
     }
 
-    function openWhatsApp(type) {
-      const message = buildWhatsAppMessage(type);
+    function openWhatsApp() {
+      const message = buildWhatsAppMessage();
       const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.location.href = url;
     }
 
-    function buildWhatsAppMessage(type) {
+    function buildWhatsAppMessage() {
       const lines = [];
 
       lines.push("Olá! Vim pelo seu site e respondi o formulário.");
@@ -760,12 +747,7 @@
       let valid = true;
       let message = "";
 
-      const blockedEmails = [
-        "teste@teste.com",
-        "asd@asd.com",
-        "aaa@aaa.com"
-      ];
-
+      const blockedEmails = ["teste@teste.com", "asd@asd.com", "aaa@aaa.com"];
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
       if (!value) {
@@ -802,11 +784,11 @@
     }
 
     function handleNameInputFormat(e) {
-      const cursorEnd = e.target.selectionStart;
+      const cursorPos = e.target.selectionStart;
       const formatted = normalizeName(e.target.value);
       e.target.value = formatted;
       try {
-        e.target.setSelectionRange(cursorEnd, cursorEnd);
+        e.target.setSelectionRange(cursorPos, cursorPos);
       } catch (_) {}
     }
 
@@ -822,7 +804,7 @@
     }
 
     function formatPhone(value) {
-      let digits = onlyDigits(value);
+      const digits = onlyDigits(value);
 
       if (!digits) return "";
       if (digits.length <= 2) return `(${digits}`;
@@ -875,11 +857,9 @@
 
       if (window.history.length > 1) {
         history.back();
-
         setTimeout(() => {
           fallbackExit(ref);
         }, 900);
-
         return;
       }
 
@@ -888,36 +868,24 @@
 
     function fallbackExit(ref) {
       const origin = String(ref || "").toLowerCase();
+      const utmSource = String(state.utms.utm_source || "").toLowerCase();
 
-      if (
-        origin.includes("instagram") ||
-        state.utms.utm_source.toLowerCase().includes("instagram")
-      ) {
+      if (origin.includes("instagram") || utmSource.includes("instagram")) {
         window.location.href = "https://www.instagram.com/";
         return;
       }
 
-      if (
-        origin.includes("facebook") ||
-        origin.includes("fb") ||
-        state.utms.utm_source.toLowerCase().includes("facebook")
-      ) {
+      if (origin.includes("facebook") || origin.includes("fb") || utmSource.includes("facebook")) {
         window.location.href = "https://www.facebook.com/";
         return;
       }
 
-      if (
-        origin.includes("tiktok") ||
-        state.utms.utm_source.toLowerCase().includes("tiktok")
-      ) {
+      if (origin.includes("tiktok") || utmSource.includes("tiktok")) {
         window.location.href = "https://www.tiktok.com/";
         return;
       }
 
-      if (
-        origin.includes("google") ||
-        state.utms.utm_source.toLowerCase().includes("google")
-      ) {
+      if (origin.includes("google") || utmSource.includes("google")) {
         window.location.href = "https://www.google.com/";
         return;
       }
