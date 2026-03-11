@@ -9,10 +9,25 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #000000;
+      --card: #101010;
+      --text: #ffffff;
+      --muted: #d6d6d6;
+      --border: #363636;
+      --input-bg: #efefef;
+      --input-text: #111111;
+      --yellow: #f6d300;
+      --yellow-soft: rgba(246, 211, 0, 0.18);
+      --green: #1ecb5c;
+      --green-soft: rgba(30, 203, 92, 0.18);
+      --error: #ff6b6b;
+    }
+
     body {
       margin: 0;
-      background: #000;
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       padding: 28px 20px 40px;
     }
@@ -37,13 +52,13 @@
     }
 
     h2 {
-      font-size: 28px;
+      font-size: 30px;
     }
 
     .subtitle {
-      color: #d6d6d6;
+      color: var(--muted);
       font-size: 16px;
-      line-height: 1.45;
+      line-height: 1.5;
       margin-bottom: 26px;
     }
 
@@ -66,21 +81,21 @@
       width: 100%;
       border: 2px solid #8d8d8d;
       border-radius: 18px;
-      background: #efefef;
-      color: #111;
+      background: var(--input-bg);
+      color: var(--input-text);
       padding: 20px 18px;
       font-size: 18px;
       outline: none;
     }
 
     input:focus {
-      border-color: #007aff;
+      border-color: var(--yellow);
       background: #fff;
     }
 
     .error {
       display: none;
-      color: #ff6b6b;
+      color: var(--error);
       font-size: 14px;
       margin-top: 8px;
       line-height: 1.4;
@@ -94,29 +109,29 @@
       width: 100%;
       border: none;
       border-radius: 14px;
-      background: #f6d300;
+      background: var(--yellow);
       color: #0b0b0b;
       font-weight: 800;
       font-size: 20px;
       padding: 20px 16px;
       cursor: pointer;
       margin-top: 12px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
-    .button:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
+    .button:active {
+      transform: scale(0.985);
     }
 
     .button-secondary {
-      background: #1f1f1f;
+      background: #181818;
       color: #fff;
-      border: 1px solid #3b3b3b;
+      border: 1px solid #303030;
     }
 
     .question-title {
       font-size: 30px;
-      line-height: 1.2;
+      line-height: 1.22;
       margin-bottom: 12px;
       font-weight: 800;
     }
@@ -130,25 +145,75 @@
 
     .answer-btn {
       width: 100%;
-      border: 2px solid #3f3f3f;
-      background: #111;
+      border: 2px solid var(--border);
+      background: #0f0f0f;
       color: #fff;
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 18px 16px;
       font-size: 18px;
       text-align: left;
       cursor: pointer;
-      line-height: 1.4;
+      line-height: 1.45;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition:
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        transform 0.16s ease;
+      animation: subtleGlow 1s ease 1;
     }
 
     .answer-btn:hover,
     .answer-btn:focus {
-      border-color: #f6d300;
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 4px var(--yellow-soft);
       outline: none;
+      transform: translateY(-1px);
     }
 
-    .hidden {
-      display: none !important;
+    .answer-btn:active {
+      transform: scale(0.992);
+    }
+
+    .answer-radio {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #c9c9c9;
+      flex: 0 0 22px;
+      position: relative;
+      transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+      background: transparent;
+    }
+
+    .answer-btn.selected {
+      border-color: var(--green);
+      background: rgba(30, 203, 92, 0.08);
+      box-shadow: 0 0 0 4px var(--green-soft);
+    }
+
+    .answer-btn.selected .answer-radio {
+      border-color: var(--green);
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(30, 203, 92, 0.16);
+    }
+
+    .answer-btn.selected .answer-radio::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .answer-btn.confirming {
+      animation: confirmPulse 0.55s ease 2;
+    }
+
+    .answer-text {
+      flex: 1;
     }
 
     .result-box {
@@ -166,9 +231,31 @@
       line-height: 1.5;
     }
 
-    .loading {
-      opacity: 0.75;
-      pointer-events: none;
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes subtleGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
+        border-color: var(--border);
+      }
+      45% {
+        box-shadow: 0 0 0 4px rgba(246, 211, 0, 0.10);
+        border-color: rgba(246, 211, 0, 0.5);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
+        border-color: var(--border);
+      }
+    }
+
+    @keyframes confirmPulse {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.012); }
+      50% { transform: scale(0.998); }
+      75% { transform: scale(1.01); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
@@ -178,19 +265,13 @@
   </div>
 
   <script>
-    // =========================
-    // CONFIGURAÇÕES PRINCIPAIS
-    // =========================
     const CONFIG = {
       whatsappNumber: "5531991741433",
-      appsScriptUrl: "", // COLE AQUI DEPOIS O LINK DO SEU WEB APP DO APPS SCRIPT
+      appsScriptUrl: "",
       titleLeadForm: "Antes de continuar, me diga como posso falar com você 👇",
       subtitleLeadForm: "Leva menos de 10 segundos."
     };
 
-    // =========================
-    // ESTADO GLOBAL
-    // =========================
     const state = {
       lead: {
         nome: "",
@@ -208,164 +289,75 @@
       },
       currentStep: "lead",
       finalType: "",
-      utms: {}
+      utms: {},
+      origin: ""
     };
 
-    // =========================
-    // MAPA DO QUIZ
-    // =========================
     const QUIZ = {
       p1: {
         title: "Qual é o seu motivo de contato hoje com um Consultor do PagBank?",
         options: [
-          {
-            label: "Comprar maquininha PagBank",
-            short: "Comprar Pag",
-            next: "p3"
-          },
-          {
-            label: "Preciso de suporte (taxas, entrega, uso)",
-            short: "Suporte",
-            next: "p2"
-          },
-          {
-            label: "Crédito ou cartão (empréstimo, limite)",
-            short: "Crédito/cartão",
-            next: "p2"
-          }
+          { label: "Comprar maquininha PagBank", short: "Comprar Pag", next: "p3" },
+          { label: "Preciso de suporte (taxas, entrega, uso)", short: "Suporte", next: "p2" },
+          { label: "Crédito ou cartão (empréstimo, limite)", short: "Crédito/cartão", next: "p2" }
         ]
       },
 
       p2: {
         title: "Este canal é exclusivo para vendas de maquininhas do PagBank, para outros assuntos, fale com a Central pelo telefone 0800-728-2174 (opção 7, depois opção 2).",
         options: [
-          {
-            label: "Entendi, finalizar perguntas.",
-            short: "Entendi",
-            next: "e2"
-          },
-          {
-            label: "Ótimo, comprar maquininha",
-            short: "Comprar maquininha",
-            next: "p3"
-          }
+          { label: "Entendi, finalizar perguntas.", short: "Entendi", next: "e3" },
+          { label: "Ótimo, comprar maquininha", short: "Comprar maquininha", next: "p3" }
         ]
       },
 
       p3: {
         title: "Você já teve uma maquininha PagBank no seu CPF ou CNPJ?",
         options: [
-          {
-            label: "Nunca.",
-            short: "Nunca",
-            next: "p5"
-          },
-          {
-            label: "Já tive/tenho, porém não uso há mais de 6 meses.",
-            short: "Sem uso +6m",
-            next: "p5"
-          },
-          {
-            label: "Tenho e uso atualmente.",
-            short: "Tenho e uso",
-            next: "p4"
-          }
+          { label: "Nunca.", short: "Nunca", next: "p5" },
+          { label: "Já tive/tenho, porém não uso há mais de 6 meses.", short: "Sem uso +6m", next: "p5" },
+          { label: "Tenho e uso atualmente.", short: "Tenho e uso", next: "p4" }
         ]
       },
 
       p4: {
         title: "Você tem um CPF ou CNPJ que nunca teve maquininha PagBank ou está sem uso há mais de 6 meses para aproveitar essa oferta?",
         options: [
-          {
-            label: "Sim",
-            short: "Sim",
-            next: "p5"
-          },
-          {
-            label: "Não",
-            short: "Não",
-            next: "e2"
-          }
+          { label: "Sim", short: "Sim", next: "p5" },
+          { label: "Não", short: "Não", next: "e2" }
         ]
       },
 
       p5: {
         title: "Qual é o seu faturamento médio mensal atualmente?",
         options: [
-          {
-            label: "Acima de R$ 2.000",
-            short: "Acima de 2k",
-            next: "p6"
-          },
-          {
-            label: "Acima de R$ 5.000",
-            short: "Acima de 5k",
-            next: "p6"
-          },
-          {
-            label: "Acima de R$ 10.000",
-            short: "Acima de 10k",
-            next: "p6"
-          },
-          {
-            label: "Até R$ 2.000",
-            short: "Até 2k",
-            next: "p6"
-          }
+          { label: "Acima de R$ 2.000", short: "Acima de 2k", next: "p6" },
+          { label: "Acima de R$ 5.000", short: "Acima de 5k", next: "p6" },
+          { label: "Acima de R$ 10.000", short: "Acima de 10k", next: "p6" },
+          { label: "Até R$ 2.000", short: "Até 2k", next: "p6" }
         ]
       },
 
       p6: {
         title: "Quando você pretende comprar a maquininha do PagBank?",
         options: [
-          {
-            label: "Preciso para esta semana.",
-            short: "Esta semana",
-            next: "p7"
-          },
-          {
-            label: "Preciso para este mês.",
-            short: "Este mês",
-            next: "p7"
-          },
-          {
-            label: "Estou pesquisando preços e taxas.",
-            short: "Pesquisando",
-            next: "p7"
-          }
+          { label: "Preciso para esta semana.", short: "Esta semana", next: "p7" },
+          { label: "Preciso para este mês.", short: "Este mês", next: "p7" },
+          { label: "Estou pesquisando preços e taxas.", short: "Pesquisando", next: "p7" }
         ]
       },
 
       p7: {
         title: "Qual valor você tem disponível hoje para investir em uma maquininha do PagBank?",
         options: [
-          {
-            label: "R$ 59 ou mais",
-            short: "R$ 59+",
-            next: "e1"
-          },
-          {
-            label: "R$ 109 ou mais",
-            short: "R$ 109+",
-            next: "e1"
-          },
-          {
-            label: "R$ 199 ou mais",
-            short: "R$ 199+",
-            next: "e1"
-          },
-          {
-            label: "Até R$ 59",
-            short: "Até R$ 59",
-            next: "e2"
-          }
+          { label: "R$ 59 ou mais", short: "R$ 59+", next: "e1" },
+          { label: "R$ 109 ou mais", short: "R$ 109+", next: "e1" },
+          { label: "R$ 199 ou mais", short: "R$ 199+", next: "e1" },
+          { label: "Até R$ 59", short: "Até R$ 59", next: "e2" }
         ]
       }
     };
 
-    // =========================
-    // APP
-    // =========================
     const app = document.getElementById("app");
 
     function render() {
@@ -386,12 +378,14 @@
 
       if (state.currentStep === "e2") {
         renderResultDisqualified();
+        return;
+      }
+
+      if (state.currentStep === "e3") {
+        renderResultCloseFlow();
       }
     }
 
-    // =========================
-    // FORMULÁRIO INICIAL
-    // =========================
     function renderLeadForm() {
       app.innerHTML = `
         <div id="leadFormWrapper">
@@ -406,7 +400,7 @@
                 id="nome"
                 name="nome"
                 placeholder="Digite seu nome"
-                autocomplete="name"
+                autocomplete="given-name"
                 value="${escapeHtml(state.lead.nome)}"
               />
               <div class="error" id="error-nome"></div>
@@ -449,26 +443,21 @@
       const whatsappInput = document.getElementById("whatsapp");
       const emailInput = document.getElementById("email");
 
+      nomeInput.addEventListener("input", handleNameInputFormat);
       whatsappInput.addEventListener("input", handlePhoneInputMask);
 
-      nomeInput.addEventListener("blur", () => {
-        validateNome(true);
-      });
-
-      whatsappInput.addEventListener("blur", () => {
-        validateWhatsapp(true);
-      });
-
-      emailInput.addEventListener("blur", () => {
-        validateEmail(true);
-      });
+      nomeInput.addEventListener("blur", () => validateNome(true));
+      whatsappInput.addEventListener("blur", () => validateWhatsapp(true));
+      emailInput.addEventListener("blur", () => validateEmail(true));
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        state.lead.nome = nomeInput.value.trim();
+        state.lead.nome = normalizeName(nomeInput.value.trim());
         state.lead.whatsapp = onlyDigits(whatsappInput.value);
         state.lead.email = emailInput.value.trim();
+
+        nomeInput.value = state.lead.nome;
 
         const nomeOk = validateNome(true);
         const whatsappOk = validateWhatsapp(true);
@@ -489,9 +478,6 @@
       });
     }
 
-    // =========================
-    // PERGUNTAS
-    // =========================
     function renderQuestion(stepKey) {
       const question = QUIZ[stepKey];
 
@@ -506,7 +492,8 @@
                 data-step="${stepKey}"
                 data-index="${index}"
               >
-                ${option.label}
+                <span class="answer-radio"></span>
+                <span class="answer-text">${option.label}</span>
               </button>
             `).join("")}
           </div>
@@ -515,9 +502,18 @@
 
       document.querySelectorAll(".answer-btn").forEach((btn) => {
         btn.addEventListener("click", async () => {
+          if (btn.dataset.locked === "1") return;
+          btn.dataset.locked = "1";
+
           const step = btn.getAttribute("data-step");
           const index = Number(btn.getAttribute("data-index"));
           const selected = QUIZ[step].options[index];
+
+          document.querySelectorAll(".answer-btn").forEach((item) => {
+            item.style.pointerEvents = "none";
+          });
+
+          btn.classList.add("selected", "confirming");
 
           state.answers[step] = selected.short;
 
@@ -533,17 +529,19 @@
             next_step: selected.next
           });
 
-          state.currentStep = selected.next;
-          if (selected.next === "e1") state.finalType = "qualified";
-          if (selected.next === "e2") state.finalType = "disqualified";
-          render();
+          setTimeout(() => {
+            state.currentStep = selected.next;
+
+            if (selected.next === "e1") state.finalType = "qualified";
+            if (selected.next === "e2") state.finalType = "disqualified";
+            if (selected.next === "e3") state.finalType = "closed";
+
+            render();
+          }, 700);
         });
       });
     }
 
-    // =========================
-    // RESULTADO QUALIFICADO
-    // =========================
     function renderResultQualified() {
       app.innerHTML = `
         <div>
@@ -577,9 +575,6 @@
       });
     }
 
-    // =========================
-    // RESULTADO DESQUALIFICADO
-    // =========================
     function renderResultDisqualified() {
       app.innerHTML = `
         <div>
@@ -611,9 +606,32 @@
       });
     }
 
-    // =========================
-    // WHATSAPP
-    // =========================
+    function renderResultCloseFlow() {
+      app.innerHTML = `
+        <div>
+          <h2>Agradeço pelas respostas!</h2>
+          <div class="subtitle">
+            Este canal é exclusivo para pedidos de maquininhas PagBank.
+          </div>
+
+          <button class="button button-secondary" id="btnCloseFlow">FECHAR FORMULÁRIO</button>
+        </div>
+      `;
+
+      document.getElementById("btnCloseFlow").addEventListener("click", async () => {
+        pushDataLayerEvent("quiz_closed_flow", {
+          final_type: "closed",
+          origin_detected: state.origin || ""
+        });
+
+        await sendToAppsScript("quiz_finished", {
+          final_type: "closed"
+        });
+
+        exitSiteByOrigin();
+      });
+    }
+
     function openWhatsApp(type) {
       const message = buildWhatsAppMessage(type);
       const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -623,48 +641,27 @@
     function buildWhatsAppMessage(type) {
       const lines = [];
 
-      if (type === "qualified") {
-        lines.push("Olá! Vim pelo seu site e respondi o formulário.");
-        lines.push("");
-        lines.push(`Nome: ${state.lead.nome}`);
-        lines.push("");
+      lines.push("Olá! Vim pelo seu site e respondi o formulário.");
+      lines.push("");
+      lines.push(`Nome: ${state.lead.nome}`);
+      lines.push("");
 
-        if (state.answers.p1) lines.push(`Mot. Ctt: ${state.answers.p1}`);
-        if (state.answers.p2) lines.push(`Canal excl.: ${state.answers.p2}`);
-        if (state.answers.p3) lines.push(`Já teve Pag: ${state.answers.p3}`);
-        if (state.answers.p4) lines.push(`CPF/CNPJ apto: ${state.answers.p4}`);
-        if (state.answers.p5) lines.push(`Fat.: ${state.answers.p5}`);
-        if (state.answers.p6) lines.push(`Quando pret. comp.: ${state.answers.p6}`);
-        if (state.answers.p7) lines.push(`Valor disp.: ${state.answers.p7}`);
-      } else {
-        lines.push("Olá! Vim pelo seu site e respondi o formulário.");
-        lines.push("");
-        lines.push(`Nome: ${state.lead.nome}`);
-        lines.push("");
-
-        if (state.answers.p1) lines.push(`Mot. Ctt: ${state.answers.p1}`);
-        if (state.answers.p2) lines.push(`Canal excl.: ${state.answers.p2}`);
-        if (state.answers.p3) lines.push(`Já teve Pag: ${state.answers.p3}`);
-        if (state.answers.p4) lines.push(`CPF/CNPJ apto: ${state.answers.p4}`);
-        if (state.answers.p5) lines.push(`Fat.: ${state.answers.p5}`);
-        if (state.answers.p6) lines.push(`Quando pret. comp.: ${state.answers.p6}`);
-        if (state.answers.p7) lines.push(`Valor disp.: ${state.answers.p7}`);
-      }
+      if (state.answers.p1) lines.push(`Mot. Ctt: ${state.answers.p1}`);
+      if (state.answers.p2) lines.push(`Canal excl.: ${state.answers.p2}`);
+      if (state.answers.p3) lines.push(`Já teve Pag: ${state.answers.p3}`);
+      if (state.answers.p4) lines.push(`CPF/CNPJ apto: ${state.answers.p4}`);
+      if (state.answers.p5) lines.push(`Fat.: ${state.answers.p5}`);
+      if (state.answers.p6) lines.push(`Quando pret. comp.: ${state.answers.p6}`);
+      if (state.answers.p7) lines.push(`Valor disp.: ${state.answers.p7}`);
 
       return lines.join("\n");
     }
 
-    // =========================
-    // VALIDAÇÕES
-    // =========================
     function validateNome(showError = false) {
-      const value = document.getElementById("nome").value.trim();
+      const value = normalizeName(document.getElementById("nome").value.trim());
       const errorEl = document.getElementById("error-nome");
 
-      const blocked = [
-        "teste", "aaa", "asdf", "qwe", "xxx", "nome", "sem nome", "admin"
-      ];
-
+      const blocked = ["teste", "aaa", "asdf", "qwe", "xxx", "admin", "nome"];
       const clean = value
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -675,19 +672,16 @@
 
       if (!value) {
         valid = false;
-        message = "Digite seu nome.";
-      } else if (value.length < 5) {
+        message = "Digite seu primeiro nome.";
+      } else if (value.length < 2) {
         valid = false;
-        message = "Digite seu nome completo.";
+        message = "Digite seu primeiro nome.";
       } else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(value)) {
         valid = false;
         message = "Use apenas letras no nome.";
-      } else if (value.split(/\s+/).length < 2) {
-        valid = false;
-        message = "Informe nome e sobrenome.";
       } else if (blocked.includes(clean)) {
         valid = false;
-        message = "Digite um nome válido.";
+        message = "Digite seu primeiro nome.";
       }
 
       setErrorState(errorEl, valid, message, showError);
@@ -702,7 +696,29 @@
       let message = "";
 
       const ddd = value.slice(0, 2);
+      const numero = value.slice(2);
       const thirdDigit = value.charAt(2);
+
+      const dddsInvalidos = ["00","01","02","03","04","05","06","07","08","09","10"];
+
+      const sequenciasBloqueadas = [
+        "123456789",
+        "987654321",
+        "012345678",
+        "876543210",
+        "111111111",
+        "222222222",
+        "333333333",
+        "444444444",
+        "555555555",
+        "666666666",
+        "777777777",
+        "888888888",
+        "999999999",
+        "000000000",
+        "912345678",
+        "900000000"
+      ];
 
       if (!value) {
         valid = false;
@@ -713,13 +729,22 @@
       } else if (/^(\d)\1{10}$/.test(value)) {
         valid = false;
         message = "Digite um WhatsApp válido.";
-      } else if (["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"].includes(ddd)) {
+      } else if (dddsInvalidos.includes(ddd)) {
         valid = false;
         message = "Digite um DDD válido.";
       } else if (thirdDigit !== "9") {
         valid = false;
         message = "Digite um número de celular com 9 após o DDD.";
-      } else if (isSequential(value)) {
+      } else if (sequenciasBloqueadas.includes(numero)) {
+        valid = false;
+        message = "Digite um WhatsApp válido.";
+      } else if (isSequential(numero)) {
+        valid = false;
+        message = "Digite um WhatsApp válido.";
+      } else if (/^9(\d)\1{7}$/.test(numero)) {
+        valid = false;
+        message = "Digite um WhatsApp válido.";
+      } else if (/^90{7,8}$/.test(numero)) {
         valid = false;
         message = "Digite um WhatsApp válido.";
       }
@@ -770,36 +795,38 @@
       }
     }
 
-    // =========================
-    // MÁSCARA WHATSAPP
-    // =========================
     function handlePhoneInputMask(e) {
       let digits = onlyDigits(e.target.value);
-
-      if (digits.length > 11) {
-        digits = digits.slice(0, 11);
-      }
-
+      if (digits.length > 11) digits = digits.slice(0, 11);
       e.target.value = formatPhone(digits);
+    }
+
+    function handleNameInputFormat(e) {
+      const cursorEnd = e.target.selectionStart;
+      const formatted = normalizeName(e.target.value);
+      e.target.value = formatted;
+      try {
+        e.target.setSelectionRange(cursorEnd, cursorEnd);
+      } catch (_) {}
+    }
+
+    function normalizeName(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
     }
 
     function formatPhone(value) {
       let digits = onlyDigits(value);
 
       if (!digits) return "";
-
-      if (digits.length <= 2) {
-        return `(${digits}`;
-      }
-
-      if (digits.length <= 7) {
-        return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      }
-
-      if (digits.length <= 11) {
-        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-      }
-
+      if (digits.length <= 2) return `(${digits}`;
+      if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
       return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
     }
 
@@ -808,14 +835,96 @@
     }
 
     function isSequential(value) {
-      const asc = "01234567890";
-      const desc = "09876543210";
-      return asc.includes(value) || desc.includes(value);
+      const asc = "0123456789";
+      const desc = "9876543210";
+
+      for (let i = 0; i <= asc.length - value.length; i++) {
+        if (asc.slice(i, i + value.length) === value) return true;
+      }
+
+      for (let i = 0; i <= desc.length - value.length; i++) {
+        if (desc.slice(i, i + value.length) === value) return true;
+      }
+
+      return false;
     }
 
-    // =========================
-    // GTM / DATALAYER
-    // =========================
+    function captureUTMs() {
+      const params = new URLSearchParams(window.location.search);
+
+      state.utms = {
+        utm_source: params.get("utm_source") || "",
+        utm_medium: params.get("utm_medium") || "",
+        utm_campaign: params.get("utm_campaign") || "",
+        utm_content: params.get("utm_content") || "",
+        utm_term: params.get("utm_term") || "",
+        fbclid: params.get("fbclid") || "",
+        gclid: params.get("gclid") || "",
+        ttclid: params.get("ttclid") || ""
+      };
+    }
+
+    function detectOrigin() {
+      const ref = (document.referrer || "").toLowerCase();
+      state.origin = ref;
+      sessionStorage.setItem("quiz_referrer", ref);
+    }
+
+    function exitSiteByOrigin() {
+      const ref = sessionStorage.getItem("quiz_referrer") || state.origin || "";
+
+      if (window.history.length > 1) {
+        history.back();
+
+        setTimeout(() => {
+          fallbackExit(ref);
+        }, 900);
+
+        return;
+      }
+
+      fallbackExit(ref);
+    }
+
+    function fallbackExit(ref) {
+      const origin = String(ref || "").toLowerCase();
+
+      if (
+        origin.includes("instagram") ||
+        state.utms.utm_source.toLowerCase().includes("instagram")
+      ) {
+        window.location.href = "https://www.instagram.com/";
+        return;
+      }
+
+      if (
+        origin.includes("facebook") ||
+        origin.includes("fb") ||
+        state.utms.utm_source.toLowerCase().includes("facebook")
+      ) {
+        window.location.href = "https://www.facebook.com/";
+        return;
+      }
+
+      if (
+        origin.includes("tiktok") ||
+        state.utms.utm_source.toLowerCase().includes("tiktok")
+      ) {
+        window.location.href = "https://www.tiktok.com/";
+        return;
+      }
+
+      if (
+        origin.includes("google") ||
+        state.utms.utm_source.toLowerCase().includes("google")
+      ) {
+        window.location.href = "https://www.google.com/";
+        return;
+      }
+
+      window.location.href = "about:blank";
+    }
+
     function pushDataLayerEvent(eventName, extra = {}) {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
@@ -835,9 +944,6 @@
       });
     }
 
-    // =========================
-    // APPS SCRIPT / PLANILHA
-    // =========================
     async function sendToAppsScript(eventType, extra = {}) {
       if (!CONFIG.appsScriptUrl) return;
 
@@ -857,6 +963,7 @@
         final_type: state.finalType || "",
         page_url: window.location.href,
         user_agent: navigator.userAgent,
+        referrer: state.origin || "",
         ...state.utms,
         ...extra
       };
@@ -875,27 +982,6 @@
       }
     }
 
-    // =========================
-    // UTM
-    // =========================
-    function captureUTMs() {
-      const params = new URLSearchParams(window.location.search);
-
-      state.utms = {
-        utm_source: params.get("utm_source") || "",
-        utm_medium: params.get("utm_medium") || "",
-        utm_campaign: params.get("utm_campaign") || "",
-        utm_content: params.get("utm_content") || "",
-        utm_term: params.get("utm_term") || "",
-        fbclid: params.get("fbclid") || "",
-        gclid: params.get("gclid") || "",
-        ttclid: params.get("ttclid") || ""
-      };
-    }
-
-    // =========================
-    // UTILITÁRIOS
-    // =========================
     function escapeHtml(text) {
       return String(text || "")
         .replaceAll("&", "&amp;")
@@ -905,10 +991,8 @@
         .replaceAll("'", "&#039;");
     }
 
-    // =========================
-    // INIT
-    // =========================
     captureUTMs();
+    detectOrigin();
     pushDataLayerEvent("quiz_start");
     render();
   </script>
