@@ -18,8 +18,8 @@
       --input-bg: #efefef;
       --input-text: #111111;
       --yellow: #f6d300;
-      --green: #1ecb5c;
-      --green-soft: rgba(30, 203, 92, 0.16);
+      --yellow-soft: rgba(246, 211, 0, 0.16);
+      --yellow-soft-2: rgba(246, 211, 0, 0.08);
       --error: #ff6b6b;
     }
 
@@ -111,11 +111,16 @@
       padding: 20px 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
     .button:active {
       transform: scale(0.985);
+    }
+
+    .button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
     .button-secondary {
@@ -157,7 +162,7 @@
         box-shadow 0.22s ease,
         background 0.22s ease,
         transform 0.16s ease;
-      animation: neutralBreath 1.4s ease-in-out 1;
+      animation: neutralBreathLoop 2.1s ease-in-out infinite;
     }
 
     .answer-btn:hover,
@@ -187,15 +192,18 @@
     }
 
     .answer-btn.selected {
-      border-color: var(--green);
-      background: rgba(30, 203, 92, 0.07);
-      box-shadow: 0 0 0 4px var(--green-soft);
+      border-color: var(--yellow);
+      background: var(--yellow-soft-2);
+      box-shadow:
+        0 0 0 4px var(--yellow-soft),
+        0 0 18px rgba(246, 211, 0, 0.12);
+      animation: selectedGlow 0.9s ease-in-out 1;
     }
 
     .answer-btn.selected .answer-radio {
-      border-color: var(--green);
-      background: var(--green);
-      box-shadow: 0 0 0 5px rgba(30, 203, 92, 0.14);
+      border-color: var(--yellow);
+      background: var(--yellow);
+      box-shadow: 0 0 0 5px rgba(246, 211, 0, 0.16);
     }
 
     .answer-btn.selected .answer-radio::after {
@@ -203,7 +211,7 @@
       position: absolute;
       inset: 5px;
       border-radius: 50%;
-      background: #ffffff;
+      background: #111111;
     }
 
     .answer-btn.confirming {
@@ -223,20 +231,39 @@
     }
 
     .small-note {
-      color: #bdbdbd;
-      font-size: 13px;
-      margin-top: 14px;
-      line-height: 1.5;
+      color: #d2d2d2;
+      font-size: 16px;
+      line-height: 1.6;
     }
 
-    .warning-note {
+    .warning-highlight {
       margin-top: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #cfcfcf;
+      border: 1px solid rgba(246, 211, 0, 0.35);
+      background: rgba(246, 211, 0, 0.08);
+      border-radius: 16px;
+      padding: 14px 14px 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      box-shadow: 0 0 0 1px rgba(246, 211, 0, 0.08);
+      animation: attentionPulse 1.7s ease-in-out infinite;
     }
 
-    @keyframes neutralBreath {
+    .warning-icon {
+      font-size: 20px;
+      line-height: 1;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    .warning-text {
+      color: #fff4a8;
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    @keyframes neutralBreathLoop {
       0% {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
       }
@@ -254,6 +281,37 @@
       50% { transform: scale(0.998); }
       75% { transform: scale(1.01); }
       100% { transform: scale(1); }
+    }
+
+    @keyframes selectedGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
+      }
+      50% {
+        box-shadow:
+          0 0 0 5px rgba(246, 211, 0, 0.18),
+          0 0 24px rgba(246, 211, 0, 0.14);
+      }
+      100% {
+        box-shadow:
+          0 0 0 4px rgba(246, 211, 0, 0.16),
+          0 0 18px rgba(246, 211, 0, 0.12);
+      }
+    }
+
+    @keyframes attentionPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0.00);
+      }
+      50% {
+        transform: scale(1.008);
+        box-shadow: 0 0 0 5px rgba(246, 211, 0, 0.08);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0.00);
+      }
     }
   </style>
 </head>
@@ -295,63 +353,63 @@
       p1: {
         title: "Qual é o seu motivo de contato hoje com um Consultor do PagBank?",
         options: [
-          { label: "Comprar maquininha PagBank", short: "Comprar Pag", next: "p3" },
-          { label: "Preciso de suporte (taxas, entrega, uso)", short: "Suporte", next: "p2" },
-          { label: "Crédito ou cartão (empréstimo, limite)", short: "Crédito/cartão", next: "p2" }
+          { label: "🛍️ Comprar maquininha PagBank", short: "Comprar Pag", next: "p3" },
+          { label: "🛠 Preciso de suporte (taxas, entrega, uso)", short: "Suporte", next: "p2" },
+          { label: "💳 Crédito ou cartão (empréstimo, limite)", short: "Crédito/cartão", next: "p2" }
         ]
       },
 
       p2: {
         title: "Este canal é exclusivo para vendas de maquininhas do PagBank, para outros assuntos, fale com a Central pelo telefone 0800-728-2174 (opção 7, depois opção 2).",
         options: [
-          { label: "Entendi, finalizar perguntas.", short: "Entendi", next: "e3" },
-          { label: "Ótimo, comprar maquininha", short: "Comprar maquininha", next: "p3" }
+          { label: "✅ Entendi, finalizar perguntas.", short: "Entendi", next: "e3" },
+          { label: "🛍️ Ótimo, comprar maquininha", short: "Comprar maquininha", next: "p3" }
         ]
       },
 
       p3: {
         title: "Você já teve uma maquininha PagBank no seu CPF ou CNPJ?",
         options: [
-          { label: "Nunca.", short: "Nunca", next: "p5" },
-          { label: "Já tive/tenho, porém não uso há mais de 6 meses.", short: "Sem uso +6m", next: "p5" },
-          { label: "Tenho e uso atualmente.", short: "Tenho e uso", next: "p4" }
+          { label: "❌ Nunca.", short: "Nunca", next: "p5" },
+          { label: "⏸ Já tive/tenho, porém não uso há mais de 6 meses.", short: "Sem uso +6m", next: "p5" },
+          { label: "✅ Tenho e uso atualmente.", short: "Tenho e uso", next: "p4" }
         ]
       },
 
       p4: {
         title: "Você tem um CPF ou CNPJ que nunca teve maquininha PagBank ou está sem uso há mais de 6 meses para aproveitar essa oferta?",
         options: [
-          { label: "Sim", short: "Sim", next: "p5" },
-          { label: "Não", short: "Não", next: "e2" }
+          { label: "✅ Sim", short: "Sim", next: "p5" },
+          { label: "❌ Não", short: "Não", next: "e2" }
         ]
       },
 
       p5: {
         title: "Qual é o seu faturamento médio mensal atualmente?",
         options: [
-          { label: "Acima de R$ 2.000", short: "Acima de 2k", next: "p6" },
-          { label: "Acima de R$ 5.000", short: "Acima de 5k", next: "p6" },
-          { label: "Acima de R$ 10.000", short: "Acima de 10k", next: "p6" },
-          { label: "Até R$ 2.000", short: "Até 2k", next: "p6" }
+          { label: "💰 Acima de R$ 2.000", short: "Acima de 2k", next: "p6" },
+          { label: "💰 Acima de R$ 5.000", short: "Acima de 5k", next: "p6" },
+          { label: "💰 Acima de R$ 10.000", short: "Acima de 10k", next: "p6" },
+          { label: "⬇️ Até R$ 2.000", short: "Até 2k", next: "p6" }
         ]
       },
 
       p6: {
         title: "Quando você pretende comprar a maquininha do PagBank?",
         options: [
-          { label: "Preciso para esta semana.", short: "Esta semana", next: "p7" },
-          { label: "Preciso para este mês.", short: "Este mês", next: "p7" },
-          { label: "Estou pesquisando preços e taxas.", short: "Pesq. preç. e tx", next: "p7" }
+          { label: "🚀 Preciso para esta semana.", short: "Esta semana", next: "p7" },
+          { label: "📅 Preciso para este mês.", short: "Este mês", next: "p7" },
+          { label: "🔎 Estou pesquisando preços e taxas.", short: "Pesq. preç. e tx", next: "p7" }
         ]
       },
 
       p7: {
         title: "Qual valor você tem disponível hoje para investir em uma maquininha do PagBank?",
         options: [
-          { label: "R$ 59 ou mais", short: "R$ 59+", next: "e1" },
-          { label: "R$ 109 ou mais", short: "R$ 109+", next: "e1" },
-          { label: "R$ 199 ou mais", short: "R$ 199+", next: "e1" },
-          { label: "Até R$ 59", short: "Até R$ 59", next: "e2" }
+          { label: "🤑 R$ 59 ou mais", short: "R$ 59+", next: "e1" },
+          { label: "🤑 R$ 109 ou mais", short: "R$ 109+", next: "e1" },
+          { label: "🤑 R$ 199 ou mais", short: "R$ 199+", next: "e1" },
+          { label: "⬇️ Até R$ 59", short: "Até R$ 59", next: "e2" }
         ]
       }
     };
@@ -359,6 +417,8 @@
     const app = document.getElementById("app");
 
     function render() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
       if (state.currentStep === "lead") {
         renderLeadForm();
         return;
@@ -392,12 +452,12 @@
 
           <form id="formQuizDenver" novalidate>
             <div class="field">
-              <label for="nome">Nome <span class="required">*</span></label>
+              <label for="nome">Primeiro nome <span class="required">*</span></label>
               <input
                 type="text"
                 id="nome"
                 name="nome"
-                placeholder="Digite seu nome"
+                placeholder="Digite apenas o seu primeiro nome"
                 autocomplete="given-name"
                 value="${escapeHtml(state.lead.nome)}"
               />
@@ -431,7 +491,7 @@
               <div class="error" id="error-email"></div>
             </div>
 
-            <button type="submit" class="button">PRÓXIMO</button>
+            <button type="submit" class="button" id="btnNextLead">PRÓXIMO</button>
           </form>
         </div>
       `;
@@ -440,6 +500,7 @@
       const nomeInput = document.getElementById("nome");
       const whatsappInput = document.getElementById("whatsapp");
       const emailInput = document.getElementById("email");
+      const btnNextLead = document.getElementById("btnNextLead");
 
       nomeInput.addEventListener("input", handleNameInputFormat);
       whatsappInput.addEventListener("input", handlePhoneInputMask);
@@ -463,6 +524,9 @@
 
         if (!nomeOk || !whatsappOk || !emailOk) return;
 
+        btnNextLead.disabled = true;
+        btnNextLead.textContent = "CARREGANDO...";
+
         pushDataLayerEvent("quiz_contact_step_completed", {
           nome: state.lead.nome,
           whatsapp: state.lead.whatsapp,
@@ -470,6 +534,7 @@
         });
 
         await sendToAppsScript("lead_form_completed");
+
         state.currentStep = "p1";
         render();
       });
@@ -539,21 +604,26 @@
     }
 
     function renderResultQualified() {
+      const firstName = getFirstName(state.lead.nome);
+
       app.innerHTML = `
         <div>
-          <h2>Tudo certo por aqui!</h2>
+          <h2>Tudo certo por aqui, ${escapeHtml(firstName)}!</h2>
           <div class="subtitle">
             Clique no botão abaixo para comprar agora a sua maquininha do PagBank.
           </div>
 
           <div class="result-box">
-            <div><strong>Nome:</strong> ${escapeHtml(state.lead.nome)}</div>
             <div class="small-note">
               Suas respostas foram organizadas para facilitar o atendimento.
             </div>
-            <div class="warning-note">
-              ⚠️ Não apague a mensagem automática que será enviada no WhatsApp.
-              Ela ajuda a agilizar e facilitar o seu atendimento.
+
+            <div class="warning-highlight">
+              <div class="warning-icon">⚠️</div>
+              <div class="warning-text">
+                Não apague a mensagem automática que será enviada no WhatsApp.
+                Ela ajuda a agilizar e facilitar o seu atendimento.
+              </div>
             </div>
           </div>
 
@@ -751,6 +821,9 @@
       } else if (/^90{7,8}$/.test(numero)) {
         valid = false;
         message = "Digite um WhatsApp válido.";
+      } else if (isSuspiciousMobileNumber(numero)) {
+        valid = false;
+        message = "Digite um WhatsApp válido.";
       }
 
       setErrorState(errorEl, valid, message, showError);
@@ -810,14 +883,19 @@
     }
 
     function normalizeName(value) {
-      return String(value || "")
+      const firstWord = String(value || "")
         .toLowerCase()
         .replace(/\s+/g, " ")
         .trim()
         .split(" ")
-        .filter(Boolean)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+        .filter(Boolean)[0] || "";
+
+      return firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
+    }
+
+    function getFirstName(value) {
+      const normalized = normalizeName(value);
+      return normalized || "por aqui";
     }
 
     function formatPhone(value) {
@@ -844,6 +922,39 @@
       for (let i = 0; i <= desc.length - value.length; i++) {
         if (desc.slice(i, i + value.length) === value) return true;
       }
+
+      return false;
+    }
+
+    function isSuspiciousMobileNumber(numero) {
+      if (!numero || numero.length !== 9) return false;
+
+      const last4 = numero.slice(-4);
+      const afterNine = numero.slice(1);
+      const uniqueDigits = new Set(numero.split("")).size;
+
+      const endingsBlocked = new Set([
+        "0000", "1111", "2222", "3333", "4444",
+        "5555", "6666", "7777", "8888", "9999",
+        "1234", "2345", "3456", "4567", "5678",
+        "6789", "9876", "8765", "7654", "6543",
+        "5432", "4321", "3210", "0001", "1000",
+        "9991", "1112", "2223", "3334", "4445",
+        "5556", "6667", "7778", "8889"
+      ]);
+
+      if (endingsBlocked.has(last4)) return true;
+
+      if (/(\d)\1{5,}/.test(afterNine)) return true;
+      if (/01234|12345|23456|34567|45678|56789|98765|87654|76543|65432|54321|43210/.test(afterNine)) return true;
+
+      if (/^9(\d)\1{3}\d{4}$/.test(numero)) return true;
+      if (/^9\d{4}(\d)\1{3}$/.test(numero)) return true;
+      if (/^9(\d)\1{2}\d$/.test(numero.slice(0, 4))) return true;
+      if (/(\d)\1{2}\d$/.test(last4)) return true;
+      if (/^\d(\d)\1{2}$/.test(last4)) return true;
+
+      if (uniqueDigits <= 3) return true;
 
       return false;
     }
