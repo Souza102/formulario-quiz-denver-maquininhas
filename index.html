@@ -2022,15 +2022,19 @@
       let message = "";
 
       if (!value) {
-        valid = false;
-        message = "Digite seu CPF.";
-      } else if (value.length < 11) {
-        valid = false;
-        message = "Digite seu CPF completo.";
-      } else if (!isValidCPF(value)) {
-        valid = false;
-        message = "Digite um CPF válido.";
-      }
+  valid = false;
+  message = "Digite seu CPF.";
+} else if (value.length < 11) {
+  valid = false;
+  message = "Digite seu CPF completo.";
+} else if (/^(\d)\1{10}$/.test(value)) {
+  // bloqueia apenas CPFs obviamente falsos (00000000000, 11111111111 etc)
+  valid = false;
+  message = "Digite um CPF válido.";
+} else if (!isValidCPF(value)) {
+  valid = false;
+  message = "Digite um CPF válido.";
+}
 
       const shouldMark = value.length === 11 || showError;
       updateInputStateSoft(input, valid, value.length > 0, shouldMark);
