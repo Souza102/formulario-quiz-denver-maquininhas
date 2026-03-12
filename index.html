@@ -25,6 +25,7 @@
       --yellow-soft: rgba(246, 211, 0, 0.18);
       --yellow-soft-2: rgba(246, 211, 0, 0.08);
       --green-soft: rgba(44, 186, 93, 0.12);
+      --green-strong-soft: rgba(44, 186, 93, 0.16);
       --red: #ff3b30;
       --red-2: #d93025;
       --red-soft: rgba(255, 59, 48, 0.12);
@@ -105,15 +106,7 @@
       border-radius: 999px;
       background: linear-gradient(90deg, var(--yellow), #ffe96d);
       box-shadow: 0 0 18px rgba(246, 211, 0, 0.4);
-      transition: width 0.35s ease;
-    }
-
-    .progress-label {
-      margin-top: 9px;
-      color: var(--muted-2);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      transition: width 0.42s ease;
     }
 
     h1, h2, h3 {
@@ -266,6 +259,20 @@
 
     .button-danger:hover {
       filter: brightness(1.04);
+    }
+
+    .button-outline {
+      background: transparent;
+      border: 2px solid #404040;
+      color: #cfcfcf;
+      box-shadow: none;
+    }
+
+    .button-outline:hover {
+      border-color: #6a6a6a;
+      color: #ffffff;
+      background: rgba(255,255,255,0.02);
+      filter: none;
     }
 
     .button-icon {
@@ -448,6 +455,19 @@
       height: 160px;
       background: radial-gradient(circle, rgba(246,211,0,0.14), rgba(246,211,0,0));
       pointer-events: none;
+    }
+
+    .positive-box {
+      margin-top: 16px;
+      border: 1px solid rgba(44,186,93,0.45);
+      background: rgba(44,186,93,0.15);
+      border-radius: 16px;
+      padding: 16px;
+      color: #d9ffe8;
+      font-size: 16px;
+      line-height: 1.6;
+      font-weight: 700;
+      box-shadow: 0 0 0 2px rgba(44,186,93,0.10);
     }
 
     .highlight-list {
@@ -1095,31 +1115,28 @@
     }
 
     function buildProgressBar() {
-      const total = 8;
-      const map = {
-        lead: 1,
-        p1: 2,
-        p2: 3,
-        p3: 3,
-        p4: 4,
-        p5: 5,
-        p6: 6,
-        p7: 7,
-        e1: 8,
-        d1: 8,
-        d2: 8,
-        e3: 8
+      const progressMap = {
+        lead: 12,
+        p1: 45,
+        p2: 58,
+        p3: 58,
+        p4: 68,
+        p5: 78,
+        p6: 87,
+        p7: 94,
+        e1: 100,
+        d1: 100,
+        d2: 100,
+        e3: 100
       };
 
-      const current = map[state.currentStep] || 1;
-      const percent = Math.max(8, Math.min(100, Math.round((current / total) * 100)));
+      const percent = progressMap[state.currentStep] || 12;
 
       return `
         <div class="progress-wrap">
-          <div class="progress-track">
+          <div class="progress-track" aria-hidden="true">
             <div class="progress-fill" style="width:${percent}%"></div>
           </div>
-          <div class="progress-label">Etapa ${current} de ${total}</div>
         </div>
       `;
     }
@@ -1233,16 +1250,16 @@
     }
 
     function renderDisqualifiedMarkup() {
+      const firstName = getFirstName(state.lead.nome);
+
       return `
         <div>
-          <h2>Agradecemos pelas respostas</h2>
+          <h2>
+            Agradeço pelas respostas ${escapeHtml(firstName)}, mas no seu caso, o PagBank não será ideal pra você no momento!
+          </h2>
 
-          <div class="disqualified-hero">
-            <div class="subtitle" style="margin-bottom:0;">
-              Infelizmente, pelas informações que você nos passou, o PagBank não será a opção ideal para você neste momento.
-              <br><br>
-              Mas calma! Ainda podemos verificar outras opções de maquininhas que talvez atendam melhor o seu perfil, com taxas mais baixas, sem aluguel ou mensalidade e opções de investimento por menos de R$ 100,00. 🤩
-            </div>
+          <div class="positive-box">
+            Mas calma! Ainda posso verificar pra você outras opções de maquininhas que talvez atendam melhor o seu perfil, com taxas mais baixas, sem aluguel ou mensalidade e saindo por menos de R$ 99,90! 🤩
           </div>
 
           <div class="button-stack" style="margin-top:18px;">
@@ -1250,7 +1267,7 @@
               <span>VER OUTRAS PROPOSTAS</span>
             </button>
 
-            <button class="button button-danger pulse-danger" id="btnCloseDisqualified">
+            <button class="button button-outline" id="btnCloseDisqualified">
               <span>FECHAR FORMULÁRIO</span>
             </button>
           </div>
@@ -1259,22 +1276,18 @@
     }
 
     function renderAlternativeProposalMarkup() {
-      const cpfFilled = state.alternate.cpf;
-      const cpfValid = cpfFilled ? isValidCPF(cpfFilled) : false;
+      const firstName = getFirstName(state.lead.nome);
+      const cpfValid = state.alternate.cpf ? isValidCPF(state.alternate.cpf) : false;
       const hasCnpj = state.alternate.hasCnpj;
-      const cnpjRequired = cpfValid && hasCnpj === "Sim";
-      const cnpjValid = cnpjRequired ? isValidCNPJ(state.alternate.cnpj) : false;
-      const showHasCnpjQuestion = cpfValid;
-      const showCnpjField = cpfValid && hasCnpj === "Sim";
-      const showFinalButton = cpfValid && (
-        hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid)
-      );
+      const cnpjVisible = cpfValid && hasCnpj === "Sim";
+      const cnpjValid = cnpjVisible ? isValidCNPJ(state.alternate.cnpj) : false;
+      const canSubmit = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
 
       return `
         <div>
-          <h2>Ótimo, que bom que você se interessou!</h2>
+          <h2>Ótimo, ${escapeHtml(firstName)}, que bom que você se interessou!</h2>
           <div class="subtitle">
-            Pra gente prosseguir, preciso apenas de alguns dados rápidos para validar uma proposta personalizada pra você!
+            Pra gente prosseguir com a nova proposta, preciso apenas de alguns dados importantes para validar uma proposta personalizada pra você!
           </div>
 
           <div class="info-box">
@@ -1296,7 +1309,7 @@
                 </div>
               </div>
 
-              <div id="hasCnpjBlock" class="${showHasCnpjQuestion ? "" : "hidden"} fade-in">
+              <div id="hasCnpjBlock" class="${cpfValid ? "" : "hidden"} fade-in">
                 <label>Você possui CNPJ?</label>
 
                 <div class="choice-inline">
@@ -1305,7 +1318,7 @@
                 </div>
               </div>
 
-              <div id="cnpjFieldWrap" class="${showCnpjField ? "" : "hidden"} fade-in" style="margin-top:18px;">
+              <div id="cnpjFieldWrap" class="${cnpjVisible ? "" : "hidden"} fade-in" style="margin-top:18px;">
                 <div class="field">
                   <label for="cnpj">CNPJ <span class="required">*</span></label>
                   <input
@@ -1321,18 +1334,16 @@
                 </div>
               </div>
 
-              ${showFinalButton ? `
-                <div class="final-cta-box fade-in">
-                  <div class="inline-success">
-                    Perfeito! Agora já posso te encaminhar para verificar outras propostas compatíveis com o seu perfil.
-                  </div>
-
-                  <button type="submit" class="button pulse-invite" id="btnWhatsAlternative">
-                    ${buildWhatsAppIconHtml()}
-                    <span>VER OUTRAS PROPOSTAS</span>
-                  </button>
+              <div id="finalCtaBox" class="final-cta-box fade-in ${canSubmit ? "" : "hidden"}">
+                <div class="inline-success" id="finalSuccessText">
+                  Tudo certo, ${escapeHtml(firstName)}! Clique no botão abaixo e fale comigo para saber mais da nova proposta.
                 </div>
-              ` : ""}
+
+                <button type="submit" class="button pulse-invite" id="btnWhatsAlternative">
+                  ${buildWhatsAppIconHtml()}
+                  <span>VER OUTRAS PROPOSTAS</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -1347,7 +1358,7 @@
             Este canal é exclusivo para pedidos de maquininhas PagBank.
           </div>
 
-          <button class="button button-danger pulse-danger" id="btnCloseFlow">
+          <button class="button button-outline" id="btnCloseFlow">
             <span>FECHAR FORMULÁRIO</span>
           </button>
         </div>
@@ -1513,17 +1524,17 @@
 
       if (cpfInput) {
         cpfInput.addEventListener("input", (e) => {
-          let digits = onlyDigits(e.target.value).slice(0, 11);
+          const digits = onlyDigits(e.target.value).slice(0, 11);
           state.alternate.cpf = digits;
           e.target.value = formatCPF(digits);
           validateCPFField(false);
-          updateAlternativeProposalView();
+          syncAlternativeProposalUI();
         });
 
         cpfInput.addEventListener("blur", () => {
           cpfInput.value = formatCPF(state.alternate.cpf);
           validateCPFField(true);
-          updateAlternativeProposalView();
+          syncAlternativeProposalUI();
         });
       }
 
@@ -1533,29 +1544,46 @@
 
           if (state.alternate.hasCnpj === "Não") {
             state.alternate.cnpj = "";
+            const cnpj = document.getElementById("cnpj");
+            if (cnpj) {
+              cnpj.value = "";
+              cnpj.classList.remove("valid", "invalid");
+            }
+            const errorCnpj = document.getElementById("error-cnpj");
+            if (errorCnpj) {
+              errorCnpj.textContent = "";
+              errorCnpj.classList.remove("show");
+            }
           }
 
           pushDataLayerEvent("quiz_alternate_has_cnpj_selected", {
             has_cnpj: state.alternate.hasCnpj
           });
 
-          updateAlternativeProposalView();
+          syncAlternativeProposalUI();
+
+          if (state.alternate.hasCnpj === "Sim") {
+            setTimeout(() => {
+              const cnpjField = document.getElementById("cnpj");
+              if (cnpjField) cnpjField.focus();
+            }, 60);
+          }
         });
       });
 
       if (cnpjInput) {
         cnpjInput.addEventListener("input", (e) => {
-          let digits = onlyDigits(e.target.value).slice(0, 14);
+          const digits = onlyDigits(e.target.value).slice(0, 14);
           state.alternate.cnpj = digits;
           e.target.value = formatCNPJ(digits);
           validateCNPJField(false);
-          updateAlternativeProposalView();
+          syncAlternativeProposalUI();
         });
 
         cnpjInput.addEventListener("blur", () => {
           cnpjInput.value = formatCNPJ(state.alternate.cnpj);
           validateCNPJField(true);
-          updateAlternativeProposalView();
+          syncAlternativeProposalUI();
         });
       }
 
@@ -1564,13 +1592,24 @@
           e.preventDefault();
 
           const cpfOk = validateCPFField(true);
-          if (!cpfOk) return;
+          if (!cpfOk) {
+            cpfInput && cpfInput.focus();
+            syncAlternativeProposalUI();
+            return;
+          }
 
-          if (!state.alternate.hasCnpj) return;
+          if (!state.alternate.hasCnpj) {
+            syncAlternativeProposalUI();
+            return;
+          }
 
           if (state.alternate.hasCnpj === "Sim") {
             const cnpjOk = validateCNPJField(true);
-            if (!cnpjOk) return;
+            if (!cnpjOk) {
+              cnpjInput && cnpjInput.focus();
+              syncAlternativeProposalUI();
+              return;
+            }
           }
 
           pushDataLayerEvent("quiz_whatsapp_click", {
@@ -1586,6 +1625,8 @@
 
           openWhatsApp("disqualified");
         });
+
+        syncAlternativeProposalUI();
       }
     }
 
@@ -1607,37 +1648,77 @@
       });
     }
 
-    function updateAlternativeProposalView() {
-      const current = state.currentStep;
-      if (current !== "d2") return;
-      render();
+    function syncAlternativeProposalUI() {
+      if (state.currentStep !== "d2") return;
+
+      const cpfValid = state.alternate.cpf ? isValidCPF(state.alternate.cpf) : false;
+      const hasCnpjBlock = document.getElementById("hasCnpjBlock");
+      const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
+      const finalCtaBox = document.getElementById("finalCtaBox");
+
+      if (!cpfValid) {
+        state.alternate.hasCnpj = "";
+        state.alternate.cnpj = "";
+      }
+
+      if (hasCnpjBlock) {
+        hasCnpjBlock.classList.toggle("hidden", !cpfValid);
+      }
+
+      document.querySelectorAll("[data-has-cnpj]").forEach((btn) => {
+        const value = btn.getAttribute("data-has-cnpj");
+        btn.classList.toggle("active", value === state.alternate.hasCnpj);
+      });
+
+      const shouldShowCnpj = cpfValid && state.alternate.hasCnpj === "Sim";
+      if (cnpjFieldWrap) {
+        cnpjFieldWrap.classList.toggle("hidden", !shouldShowCnpj);
+      }
+
+      const canSubmit = cpfValid && (
+        state.alternate.hasCnpj === "Não" ||
+        (state.alternate.hasCnpj === "Sim" && isValidCNPJ(state.alternate.cnpj))
+      );
+
+      if (finalCtaBox) {
+        finalCtaBox.classList.toggle("hidden", !canSubmit);
+      }
+
+      if (!shouldShowCnpj) {
+        const cnpjInput = document.getElementById("cnpj");
+        if (cnpjInput && state.alternate.hasCnpj !== "Sim") {
+          cnpjInput.value = "";
+          cnpjInput.classList.remove("valid", "invalid");
+        }
+      }
     }
 
     function openRecoveryModal() {
       state.modalOpen = true;
       document.body.classList.add("modal-open");
 
+      const firstName = getFirstName(state.lead.nome);
+
       modalRoot.innerHTML = `
         <div class="modal-overlay" id="modalOverlay">
           <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="modal-title" id="modalTitle">Tem certeza que deseja sair?</div>
+            <div class="modal-title" id="modalTitle">Tem certeza que deseja sair, ${escapeHtml(firstName)}?</div>
 
             <div class="modal-text">
-              Ainda conseguimos pra você uma <strong>proposta personalizada</strong>, com <strong>taxas baixinhas</strong>, seja no <strong>CPF ou CNPJ</strong>, com opções <strong>sem aluguel ou mensalidade</strong>, <strong>frete expresso grátis para o seu endereço</strong> e você investindo <strong>menos de R$ 100,00</strong>! 🤩
+              Eu consegui uma <strong>CONDIÇÃO EXCLUSIVA</strong> pra você no <strong>CPF ou CNPJ</strong>! 😏
             </div>
 
             <div class="highlight-list">
-              <div class="highlight-item">✨ Proposta personalizada</div>
-              <div class="highlight-item">💰 Taxas baixinhas</div>
-              <div class="highlight-item">📄 CPF ou CNPJ</div>
-              <div class="highlight-item">🆓 Sem aluguel ou mensalidade</div>
-              <div class="highlight-item">🚚 Frete expresso grátis para o seu endereço</div>
-              <div class="highlight-item">🔥 Menos de R$ 100,00</div>
+              <div class="highlight-item">✅ Taxas baixinhas</div>
+              <div class="highlight-item">✅ Aceita CPF ou CNPJ</div>
+              <div class="highlight-item">✅ Sem aluguel ou mensalidade</div>
+              <div class="highlight-item">🚚 Frete expresso grátis</div>
+              <div class="highlight-item">🔥 Menos de R$ 99,90</div>
             </div>
 
             <div class="modal-actions">
               <button class="button pulse-invite" id="btnModalRecover">OK, VER PROPOSTAS</button>
-              <button class="button button-danger pulse-danger" id="btnModalClose">FECHAR FORMULÁRIO</button>
+              <button class="button button-outline" id="btnModalClose">FECHAR FORMULÁRIO</button>
             </div>
           </div>
         </div>
@@ -1845,17 +1926,20 @@
       if (!input) return false;
 
       const value = input.value.trim();
+      const normalized = value.toLowerCase();
       const errorEl = document.getElementById("error-email");
 
       let valid = true;
       let message = "";
 
-      const blockedEmails = [
+      const blockedEmails = new Set([
         "teste@teste.com",
         "asd@asd.com",
         "aaa@aaa.com",
-        "test@test.com"
-      ];
+        "test@test.com",
+        "teste@gmail.com",
+        "email@email.com"
+      ]);
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -1865,9 +1949,21 @@
       } else if (!emailRegex.test(value)) {
         valid = false;
         message = "Digite um e-mail válido.";
-      } else if (blockedEmails.includes(value.toLowerCase())) {
+      } else if (blockedEmails.has(normalized)) {
         valid = false;
         message = "Digite um e-mail válido.";
+      } else if (normalized.includes("..")) {
+        valid = false;
+        message = "Digite um e-mail válido.";
+      } else {
+        const [localPart = "", domainPart = ""] = normalized.split("@");
+        if (!localPart || !domainPart || !domainPart.includes(".")) {
+          valid = false;
+          message = "Digite um e-mail válido.";
+        } else if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) {
+          valid = false;
+          message = "Digite um e-mail válido.";
+        }
       }
 
       updateInputState(input, valid, value.length > 0);
