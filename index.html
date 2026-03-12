@@ -618,15 +618,9 @@
     }
 
     @keyframes neutralBreathLoop {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      }
-      50% {
-        box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      50% { box-shadow: 0 0 0 3px rgba(255,255,255,0.03); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
     }
 
     @keyframes confirmPulse {
@@ -638,72 +632,33 @@
     }
 
     @keyframes selectedGlow {
-      0% {
-        box-shadow: 0 0 0 0 rgba(246,211,0,0);
-      }
-      50% {
-        box-shadow: 0 0 0 5px rgba(246,211,0,0.18), 0 0 24px rgba(246,211,0,0.14);
-      }
-      100% {
-        box-shadow: 0 0 0 4px rgba(246,211,0,0.16), 0 0 18px rgba(246,211,0,0.12);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(246,211,0,0); }
+      50% { box-shadow: 0 0 0 5px rgba(246,211,0,0.18), 0 0 24px rgba(246,211,0,0.14); }
+      100% { box-shadow: 0 0 0 4px rgba(246,211,0,0.16), 0 0 18px rgba(246,211,0,0.12); }
     }
 
     @keyframes attentionPulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(246,211,0,0);
-      }
-      50% {
-        transform: scale(1.008);
-        box-shadow: 0 0 0 5px rgba(246,211,0,0.08);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(246,211,0,0);
-      }
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
+      50% { transform: scale(1.008); box-shadow: 0 0 0 5px rgba(246,211,0,0.08); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
     }
 
     @keyframes invitePulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(246,211,0,0);
-      }
-      50% {
-        transform: scale(1.014);
-        box-shadow: 0 0 0 6px rgba(246,211,0,0.12), 0 0 24px rgba(246,211,0,0.18);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(246,211,0,0);
-      }
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
+      50% { transform: scale(1.014); box-shadow: 0 0 0 6px rgba(246,211,0,0.12), 0 0 24px rgba(246,211,0,0.18); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
     }
 
     @keyframes dangerPulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,59,48,0);
-      }
-      50% {
-        transform: scale(1.01);
-        box-shadow: 0 0 0 6px rgba(255,59,48,0.10), 0 0 24px rgba(255,59,48,0.16);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,59,48,0);
-      }
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0); }
+      50% { transform: scale(1.01); box-shadow: 0 0 0 6px rgba(255,59,48,0.10), 0 0 24px rgba(255,59,48,0.16); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0); }
     }
 
     @keyframes softInvite {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      }
-      50% {
-        box-shadow: 0 0 0 4px rgba(255,255,255,0.03);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      50% { box-shadow: 0 0 0 4px rgba(255,255,255,0.03); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
     }
 
     @keyframes shineAcross {
@@ -712,25 +667,13 @@
     }
 
     @keyframes fadeSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes modalPop {
-      from {
-        opacity: 0;
-        transform: scale(0.97) translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+      from { opacity: 0; transform: scale(0.97) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     @media (max-width: 540px) {
@@ -1050,62 +993,23 @@
     }
 
     function renderStepContent() {
-      if (state.currentStep === "lead") {
-        return renderLeadFormMarkup();
-      }
-
-      if (QUIZ[state.currentStep]) {
-        return renderQuestionMarkup(state.currentStep);
-      }
-
-      if (state.currentStep === "e1") {
-        return renderQualifiedMarkup();
-      }
-
-      if (state.currentStep === "d1") {
-        return renderDisqualifiedMarkup();
-      }
-
-      if (state.currentStep === "d2") {
-        return renderAlternativeProposalMarkup();
-      }
-
-      if (state.currentStep === "e3") {
-        return renderClosedFlowMarkup();
-      }
+      if (state.currentStep === "lead") return renderLeadFormMarkup();
+      if (QUIZ[state.currentStep]) return renderQuestionMarkup(state.currentStep);
+      if (state.currentStep === "e1") return renderQualifiedMarkup();
+      if (state.currentStep === "d1") return renderDisqualifiedMarkup();
+      if (state.currentStep === "d2") return renderAlternativeProposalMarkup();
+      if (state.currentStep === "e3") return renderClosedFlowMarkup();
 
       return `<div><h2>Algo saiu do fluxo.</h2></div>`;
     }
 
     function attachCurrentStepEvents() {
-      if (state.currentStep === "lead") {
-        attachLeadFormEvents();
-        return;
-      }
-
-      if (QUIZ[state.currentStep]) {
-        attachQuestionEvents();
-        return;
-      }
-
-      if (state.currentStep === "e1") {
-        attachQualifiedEvents();
-        return;
-      }
-
-      if (state.currentStep === "d1") {
-        attachDisqualifiedEvents();
-        return;
-      }
-
-      if (state.currentStep === "d2") {
-        attachAlternativeProposalEvents();
-        return;
-      }
-
-      if (state.currentStep === "e3") {
-        attachClosedFlowEvents();
-      }
+      if (state.currentStep === "lead") return attachLeadFormEvents();
+      if (QUIZ[state.currentStep]) return attachQuestionEvents();
+      if (state.currentStep === "e1") return attachQualifiedEvents();
+      if (state.currentStep === "d1") return attachDisqualifiedEvents();
+      if (state.currentStep === "d2") return attachAlternativeProposalEvents();
+      if (state.currentStep === "e3") return attachClosedFlowEvents();
     }
 
     function buildProgressBar() {
@@ -1276,12 +1180,12 @@
       const firstName = getFirstName(state.lead.nome);
       const cpfDigits = state.alternate.cpf || "";
       const cpfCompleted = cpfDigits.length === 11;
-      const cpfValid = cpfCompleted && isValidCPF(cpfDigits);
+      const cpfValid = cpfCompleted && isAcceptableCPF(cpfDigits);
       const hasCnpj = state.alternate.hasCnpj;
       const cnpjVisible = cpfValid && hasCnpj === "Sim";
       const cnpjValue = state.alternate.cnpj || "";
       const cnpjCompleted = cnpjValue.length === 14;
-      const cnpjValid = cnpjCompleted && isValidCNPJGeneral(cnpjValue);
+      const cnpjValid = cnpjCompleted && isAcceptableCNPJGeneral(cnpjValue);
       const canSubmit = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
 
       return `
@@ -1396,9 +1300,7 @@
       });
 
       emailInput.addEventListener("keydown", (e) => {
-        if (e.key === " ") {
-          e.preventDefault();
-        }
+        if (e.key === " ") e.preventDefault();
       });
 
       emailInput.addEventListener("input", (e) => {
@@ -1409,6 +1311,7 @@
       });
 
       nomeInput.addEventListener("blur", () => validateNome(true));
+
       whatsappInput.addEventListener("blur", () => {
         const digits = normalizeBrazilPhoneInput(whatsappInput.value);
         state.lead.whatsapp = digits;
@@ -1684,7 +1587,7 @@
 
       const cpfDigits = state.alternate.cpf || "";
       const cpfCompleted = cpfDigits.length === 11;
-      const cpfValid = cpfCompleted && isValidCPF(cpfDigits);
+      const cpfValid = cpfCompleted && isAcceptableCPF(cpfDigits);
 
       const hasCnpjBlock = document.getElementById("hasCnpjBlock");
       const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
@@ -1713,7 +1616,7 @@
       const cnpjCompleted = cnpjValue.length === 14;
       const canSubmit = cpfValid && (
         state.alternate.hasCnpj === "Não" ||
-        (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isValidCNPJGeneral(cnpjValue))
+        (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isAcceptableCNPJGeneral(cnpjValue))
       );
 
       if (finalCtaBox) {
@@ -1766,9 +1669,7 @@
 
       if (overlay) {
         overlay.addEventListener("click", (e) => {
-          if (e.target === overlay) {
-            closeModal(true);
-          }
+          if (e.target === overlay) closeModal(true);
         });
       }
 
@@ -2022,19 +1923,15 @@
       let message = "";
 
       if (!value) {
-  valid = false;
-  message = "Digite seu CPF.";
-} else if (value.length < 11) {
-  valid = false;
-  message = "Digite seu CPF completo.";
-} else if (/^(\d)\1{10}$/.test(value)) {
-  // bloqueia apenas CPFs obviamente falsos (00000000000, 11111111111 etc)
-  valid = false;
-  message = "Digite um CPF válido.";
-} else if (!isValidCPF(value)) {
-  valid = false;
-  message = "Digite um CPF válido.";
-}
+        valid = false;
+        message = "Digite seu CPF.";
+      } else if (value.length < 11) {
+        valid = false;
+        message = "Digite seu CPF completo.";
+      } else if (!isAcceptableCPF(value)) {
+        valid = false;
+        message = "Digite um CPF válido.";
+      }
 
       const shouldMark = value.length === 11 || showError;
       updateInputStateSoft(input, valid, value.length > 0, shouldMark);
@@ -2062,7 +1959,7 @@
       } else if (value.length < 14) {
         valid = false;
         message = "Digite seu CNPJ completo.";
-      } else if (!isValidCNPJGeneral(value)) {
+      } else if (!isAcceptableCNPJGeneral(value)) {
         valid = false;
         message = "Digite um CNPJ válido.";
       }
@@ -2123,17 +2020,9 @@
     function normalizeBrazilPhoneInput(value) {
       let digits = onlyDigits(value);
 
-      if (digits.startsWith("00")) {
-        digits = digits.slice(2);
-      }
-
-      if (digits.length >= 12 && digits.startsWith("55")) {
-        digits = digits.slice(2);
-      }
-
-      if (digits.length > 11) {
-        digits = digits.slice(0, 11);
-      }
+      if (digits.startsWith("00")) digits = digits.slice(2);
+      if (digits.length >= 12 && digits.startsWith("55")) digits = digits.slice(2);
+      if (digits.length > 11) digits = digits.slice(0, 11);
 
       return digits;
     }
@@ -2215,78 +2104,20 @@
       return true;
     }
 
-    function isValidCPF(cpf) {
+    function isAcceptableCPF(cpf) {
       const clean = onlyDigits(cpf);
 
       if (!clean || clean.length !== 11) return false;
       if (/^(\d)\1{10}$/.test(clean)) return false;
 
-      let sum = 0;
-      for (let i = 0; i < 9; i++) {
-        sum += Number(clean.charAt(i)) * (10 - i);
-      }
-
-      let firstDigit = 11 - (sum % 11);
-      if (firstDigit >= 10) firstDigit = 0;
-      if (firstDigit !== Number(clean.charAt(9))) return false;
-
-      sum = 0;
-      for (let i = 0; i < 10; i++) {
-        sum += Number(clean.charAt(i)) * (11 - i);
-      }
-
-      let secondDigit = 11 - (sum % 11);
-      if (secondDigit >= 10) secondDigit = 0;
-      if (secondDigit !== Number(clean.charAt(10))) return false;
-
       return true;
     }
 
-    function isValidCNPJ(cnpj) {
-      const clean = onlyDigits(cnpj);
-
-      if (!clean || clean.length !== 14) return false;
-      if (/^(\d)\1{13}$/.test(clean)) return false;
-
-      const weights1 = [5,4,3,2,9,8,7,6,5,4,3,2];
-      const weights2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
-
-      let sum = 0;
-      for (let i = 0; i < 12; i++) {
-        sum += Number(clean.charAt(i)) * weights1[i];
-      }
-
-      let remainder = sum % 11;
-      let firstDigit = remainder < 2 ? 0 : 11 - remainder;
-      if (firstDigit !== Number(clean.charAt(12))) return false;
-
-      sum = 0;
-      for (let i = 0; i < 13; i++) {
-        sum += Number(clean.charAt(i)) * weights2[i];
-      }
-
-      remainder = sum % 11;
-      let secondDigit = remainder < 2 ? 0 : 11 - remainder;
-      if (secondDigit !== Number(clean.charAt(13))) return false;
-
-      return true;
-    }
-
-    function isValidCNPJGeneral(cnpj) {
+    function isAcceptableCNPJGeneral(cnpj) {
       const clean = normalizeCNPJInput(cnpj);
 
       if (!clean || clean.length !== 14) return false;
       if (/^([A-Z0-9])\1{13}$/.test(clean)) return false;
-
-      if (/^\d{14}$/.test(clean)) {
-        return isValidCNPJ(clean);
-      }
-
-      const base = clean.slice(0, 12);
-      const dv = clean.slice(12);
-
-      if (!/^[A-Z0-9]{12}\d{2}$/.test(clean)) return false;
-      if (!/[A-Z]/.test(base)) return false;
 
       return true;
     }
