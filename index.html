@@ -1177,6 +1177,9 @@
                 name="email"
                 placeholder="seuemail@gmail.com"
                 autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
                 value="${escapeHtml(state.lead.email)}"
               />
               <div class="error" id="error-email"></div>
@@ -1276,14 +1279,14 @@
       const cpfValid = cpfCompleted && isValidCPF(cpfDigits);
       const hasCnpj = state.alternate.hasCnpj;
       const cnpjVisible = cpfValid && hasCnpj === "Sim";
-      const cnpjDigits = state.alternate.cnpj || "";
-      const cnpjCompleted = cnpjDigits.length === 14;
-      const cnpjValid = cnpjCompleted && isValidCNPJ(cnpjDigits);
+      const cnpjValue = state.alternate.cnpj || "";
+      const cnpjCompleted = cnpjValue.length === 14;
+      const cnpjValid = cnpjCompleted && isValidCNPJGeneral(cnpjValue);
       const canSubmit = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
 
       return `
         <div>
-          <h2>Ótimo, ${escapeHtml(firstName)}, que bom que você se interessou!</h2>
+          <h2>Ótimo ${escapeHtml(firstName)}, que bom que você se interessou!</h2>
           <div class="subtitle">
             Pra gente prosseguir com a nova proposta, preciso apenas de alguns dados importantes para validar uma proposta personalizada pra você!
           </div>
@@ -1320,12 +1323,14 @@
                 <div class="field">
                   <label for="cnpj">Maravilha, ${escapeHtml(firstName)}! Me envie também seu CNPJ <span class="required">*</span></label>
                   <input
-                    type="tel"
+                    type="text"
                     id="cnpj"
                     name="cnpj"
-                    placeholder="00.000.000/0000-00"
-                    inputmode="numeric"
+                    placeholder="SS.SSS.SSS/SSSS-NN"
+                    inputmode="text"
                     autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
                     value="${escapeHtml(formatCNPJ(state.alternate.cnpj))}"
                   />
                   <div class="error" id="error-cnpj"></div>
@@ -1390,8 +1395,16 @@
         validateWhatsapp(false);
       });
 
+      emailInput.addEventListener("keydown", (e) => {
+        if (e.key === " ") {
+          e.preventDefault();
+        }
+      });
+
       emailInput.addEventListener("input", (e) => {
-        state.lead.email = e.target.value.trim();
+        const normalizedEmail = normalizeEmail(e.target.value);
+        e.target.value = normalizedEmail;
+        state.lead.email = normalizedEmail;
         validateEmail(false);
       });
 
@@ -1402,14 +1415,20 @@
         whatsappInput.value = formatPhone(digits);
         validateWhatsapp(true);
       });
-      emailInput.addEventListener("blur", () => validateEmail(true));
+
+      emailInput.addEventListener("blur", () => {
+        const normalizedEmail = normalizeEmail(emailInput.value);
+        emailInput.value = normalizedEmail;
+        state.lead.email = normalizedEmail;
+        validateEmail(true);
+      });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         state.lead.nome = normalizeName(nomeInput.value.trim());
         state.lead.whatsapp = normalizeBrazilPhoneInput(whatsappInput.value);
-        state.lead.email = emailInput.value.trim();
+        state.lead.email = normalizeEmail(emailInput.value);
 
         nomeInput.value = state.lead.nome;
         whatsappInput.value = formatPhone(state.lead.whatsapp);
@@ -1573,24 +1592,27 @@
               const cnpjField = document.getElementById("cnpj");
               if (cnpjField) {
                 cnpjField.focus();
-                cnpjField.click();
+                const valueLength = cnpjField.value.length;
+                cnpjField.setSelectionRange(valueLength, valueLength);
               }
-            }, 80);
+            }, 120);
           }
         });
       });
 
       if (cnpjInput) {
         cnpjInput.addEventListener("input", (e) => {
-          const digits = onlyDigits(e.target.value).slice(0, 14);
-          state.alternate.cnpj = digits;
-          e.target.value = formatCNPJ(digits);
+          const normalized = normalizeCNPJInput(e.target.value);
+          state.alternate.cnpj = normalized;
+          e.target.value = formatCNPJ(normalized);
           validateCNPJField(false);
           syncAlternativeProposalUI();
         });
 
         cnpjInput.addEventListener("blur", () => {
-          cnpjInput.value = formatCNPJ(state.alternate.cnpj);
+          const normalized = normalizeCNPJInput(cnpjInput.value);
+          state.alternate.cnpj = normalized;
+          cnpjInput.value = formatCNPJ(normalized);
           validateCNPJField(true);
           syncAlternativeProposalUI();
         });
@@ -1687,11 +1709,11 @@
         cnpjFieldWrap.classList.toggle("hidden", !shouldShowCnpj);
       }
 
-      const cnpjDigits = state.alternate.cnpj || "";
-      const cnpjCompleted = cnpjDigits.length === 14;
+      const cnpjValue = state.alternate.cnpj || "";
+      const cnpjCompleted = cnpjValue.length === 14;
       const canSubmit = cpfValid && (
         state.alternate.hasCnpj === "Não" ||
-        (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isValidCNPJ(cnpjDigits))
+        (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isValidCNPJGeneral(cnpjValue))
       );
 
       if (finalCtaBox) {
@@ -1939,7 +1961,9 @@
       const input = document.getElementById("email");
       if (!input) return false;
 
-      const value = input.value.trim();
+      const value = normalizeEmail(input.value);
+      input.value = value;
+
       const normalized = value.toLowerCase();
       const errorEl = document.getElementById("error-email");
 
@@ -2008,7 +2032,8 @@
         message = "Digite um CPF válido.";
       }
 
-      updateInputState(input, valid, value.length > 0);
+      const shouldMark = value.length === 11 || showError;
+      updateInputStateSoft(input, valid, value.length > 0, shouldMark);
 
       const shouldShow = showError || value.length === 11;
       setErrorState(errorEl, valid, message, shouldShow);
@@ -2020,7 +2045,7 @@
       const input = document.getElementById("cnpj");
       if (!input) return false;
 
-      const value = onlyDigits(input.value).slice(0, 14);
+      const value = normalizeCNPJInput(input.value).slice(0, 14);
       state.alternate.cnpj = value;
       const errorEl = document.getElementById("error-cnpj");
 
@@ -2033,12 +2058,13 @@
       } else if (value.length < 14) {
         valid = false;
         message = "Digite seu CNPJ completo.";
-      } else if (!isValidCNPJ(value)) {
+      } else if (!isValidCNPJGeneral(value)) {
         valid = false;
         message = "Digite um CNPJ válido.";
       }
 
-      updateInputState(input, valid, value.length > 0);
+      const shouldMark = value.length === 14 || showError;
+      updateInputStateSoft(input, valid, value.length > 0, shouldMark);
 
       const shouldShow = showError || value.length === 14;
       setErrorState(errorEl, valid, message, shouldShow);
@@ -2050,13 +2076,8 @@
       if (!errorEl) return;
 
       if (!showError) {
-        if (valid) {
-          errorEl.textContent = "";
-          errorEl.classList.remove("show");
-        } else {
-          errorEl.textContent = "";
-          errorEl.classList.remove("show");
-        }
+        errorEl.textContent = "";
+        errorEl.classList.remove("show");
         return;
       }
 
@@ -2074,6 +2095,19 @@
       input.classList.remove("valid", "invalid");
 
       if (!hasValue) return;
+
+      if (valid) {
+        input.classList.add("valid");
+      } else {
+        input.classList.add("invalid");
+      }
+    }
+
+    function updateInputStateSoft(input, valid, hasValue, shouldMark) {
+      if (!input) return;
+      input.classList.remove("valid", "invalid");
+
+      if (!hasValue || !shouldMark) return;
 
       if (valid) {
         input.classList.add("valid");
@@ -2125,6 +2159,20 @@
         .filter(Boolean)[0] || "";
 
       return capitalizeWord(firstWord);
+    }
+
+    function normalizeEmail(value) {
+      return String(value || "")
+        .replace(/\s+/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    function normalizeCNPJInput(value) {
+      return String(value || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "")
+        .slice(0, 14);
     }
 
     function capitalizeWord(word) {
@@ -2220,6 +2268,25 @@
       return true;
     }
 
+    function isValidCNPJGeneral(cnpj) {
+      const clean = normalizeCNPJInput(cnpj);
+
+      if (!clean || clean.length !== 14) return false;
+      if (/^([A-Z0-9])\1{13}$/.test(clean)) return false;
+
+      if (/^\d{14}$/.test(clean)) {
+        return isValidCNPJ(clean);
+      }
+
+      const base = clean.slice(0, 12);
+      const dv = clean.slice(12);
+
+      if (!/^[A-Z0-9]{12}\d{2}$/.test(clean)) return false;
+      if (!/[A-Z]/.test(base)) return false;
+
+      return true;
+    }
+
     function formatPhone(value) {
       const digits = onlyDigits(value);
 
@@ -2242,13 +2309,13 @@
     }
 
     function formatCNPJ(value) {
-      const digits = onlyDigits(value).slice(0, 14);
+      const clean = normalizeCNPJInput(value);
 
-      if (digits.length <= 2) return digits;
-      if (digits.length <= 5) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-      if (digits.length <= 8) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
-      if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
-      return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12, 14)}`;
+      if (clean.length <= 2) return clean;
+      if (clean.length <= 5) return `${clean.slice(0, 2)}.${clean.slice(2)}`;
+      if (clean.length <= 8) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5)}`;
+      if (clean.length <= 12) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8)}`;
+      return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8, 12)}-${clean.slice(12, 14)}`;
     }
 
     function onlyDigits(value) {
