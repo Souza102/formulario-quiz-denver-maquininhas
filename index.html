@@ -20,11 +20,7 @@
       --yellow: #f6d300;
       --yellow-soft: rgba(246, 211, 0, 0.16);
       --yellow-soft-2: rgba(246, 211, 0, 0.08);
-      --red: #d63b3b;
-      --red-dark: #8b1f1f;
-      --red-soft: rgba(214, 59, 59, 0.14);
       --error: #ff6b6b;
-      --success-soft: rgba(246, 211, 0, 0.08);
     }
 
     body {
@@ -38,7 +34,6 @@
     .container {
       max-width: 520px;
       margin: 0 auto;
-      position: relative;
     }
 
     h1, h2 {
@@ -47,13 +42,18 @@
       font-weight: 800;
     }
 
-    h1 { font-size: 34px; }
-    h2 { font-size: 30px; }
+    h1 {
+      font-size: 34px;
+    }
+
+    h2 {
+      font-size: 30px;
+    }
 
     .subtitle {
       color: var(--muted);
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.5;
       margin-bottom: 26px;
     }
 
@@ -111,16 +111,11 @@
       padding: 20px 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.2s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
-      text-align: center;
-    }
-
-    .button:hover {
-      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
     }
 
     .button:active {
@@ -130,31 +125,12 @@
     .button:disabled {
       opacity: 0.7;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
     .button-secondary {
       background: #181818;
       color: #ffffff;
       border: 1px solid #303030;
-    }
-
-    .button-danger {
-      background: var(--red-dark);
-      color: #ffffff;
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 1px rgba(214, 59, 59, 0.08);
-    }
-
-    .button-danger:hover {
-      box-shadow: 0 0 0 4px rgba(214, 59, 59, 0.12);
-    }
-
-    .button-attention {
-      animation: ctaPulse 1.7s ease-in-out infinite;
-      box-shadow:
-        0 0 0 0 rgba(246, 211, 0, 0.22),
-        0 0 18px rgba(246, 211, 0, 0.16);
     }
 
     .button-icon {
@@ -306,152 +282,16 @@
       margin-top: 6px;
     }
 
-    .compact-box {
-      background: #0f0f0f;
-      border: 1px solid #2a2a2a;
-      border-radius: 18px;
-      padding: 18px;
-      margin-top: 8px;
-    }
-
-    .compact-text {
-      color: #e8e8e8;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 18px;
-    }
-
-    .lgpd-note {
-      margin-top: 10px;
-      color: #d9d9d9;
-      font-size: 13px;
-      line-height: 1.55;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 12px 13px;
-    }
-
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 10px;
-      margin-bottom: 8px;
-    }
-
-    .radio-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 2px solid #333333;
-      border-radius: 16px;
-      padding: 16px 14px;
-      background: #0d0d0d;
-      cursor: pointer;
-      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .16s ease;
-    }
-
-    .radio-card:hover {
-      border-color: #4b4b4b;
-      transform: translateY(-1px);
-    }
-
-    .radio-card.selected {
-      border-color: var(--yellow);
-      background: var(--success-soft);
-      box-shadow: 0 0 0 4px var(--yellow-soft);
-    }
-
-    .radio-card input {
-      display: none;
-    }
-
-    .radio-indicator {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid #d0d0d0;
-      flex: 0 0 22px;
-      position: relative;
-    }
-
-    .radio-card.selected .radio-indicator {
-      border-color: var(--yellow);
-      background: var(--yellow);
-    }
-
-    .radio-card.selected .radio-indicator::after {
-      content: "";
-      position: absolute;
-      inset: 5px;
-      border-radius: 50%;
-      background: #111111;
-    }
-
-    .radio-text {
-      font-size: 18px;
-      line-height: 1.4;
-      font-weight: 700;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .modal-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      width: 100%;
-      max-width: 520px;
-      background: #111111;
-      border: 1px solid #2f2f2f;
-      border-radius: 22px;
-      padding: 22px 18px 16px;
-      box-shadow: 0 18px 48px rgba(0,0,0,0.42);
-      transform: translateY(8px);
-      transition: transform 0.2s ease;
-    }
-
-    .modal-overlay.show .modal-card {
-      transform: translateY(0);
-    }
-
-    .modal-title {
-      font-size: 28px;
-      line-height: 1.18;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-
-    .modal-text {
-      color: #e8e8e8;
-      font-size: 16px;
-      line-height: 1.65;
-      margin-bottom: 6px;
-    }
-
     @keyframes neutralBreathLoop {
-      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-      50% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
+      50% {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
     }
 
     @keyframes confirmPulse {
@@ -463,7 +303,9 @@
     }
 
     @keyframes selectedGlow {
-      0% { box-shadow: 0 0 0 0 rgba(246, 211, 0, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(246, 211, 0, 0);
+      }
       50% {
         box-shadow:
           0 0 0 5px rgba(246, 211, 0, 0.18),
@@ -490,46 +332,11 @@
         box-shadow: 0 0 0 0 rgba(246, 211, 0, 0.00);
       }
     }
-
-    @keyframes ctaPulse {
-      0% {
-        transform: scale(1);
-        box-shadow:
-          0 0 0 0 rgba(246, 211, 0, 0.22),
-          0 0 16px rgba(246, 211, 0, 0.10);
-      }
-      50% {
-        transform: scale(1.012);
-        box-shadow:
-          0 0 0 8px rgba(246, 211, 0, 0.00),
-          0 0 24px rgba(246, 211, 0, 0.18);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow:
-          0 0 0 0 rgba(246, 211, 0, 0.00),
-          0 0 16px rgba(246, 211, 0, 0.10);
-      }
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div id="app"></div>
-  </div>
-
-  <div id="exitModal" class="modal-overlay" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="exitModalTitle">
-      <div class="modal-title" id="exitModalTitle">Tem certeza que deseja sair?</div>
-      <div class="modal-text">
-        Ainda conseguimos pra você <strong>uma proposta personalizada</strong>, com <strong>taxas baixinhas</strong>, seja no <strong>CPF ou CNPJ</strong>, com opções <strong>sem aluguel ou mensalidade</strong>, <strong>frete expresso grátis para o seu endereço</strong> e você investindo <strong>menos de R$ 100,00</strong>! 🤩
-      </div>
-
-      <div class="button-stack">
-        <button class="button button-attention" id="btnRecoverExit">OK, VER PROPOSTAS</button>
-        <button class="button button-danger" id="btnConfirmExit">FECHAR FORMULÁRIO</button>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -545,10 +352,7 @@
       lead: {
         nome: "",
         whatsapp: "",
-        email: "",
-        cpf: "",
-        possuiCnpj: "",
-        cnpj: ""
+        email: ""
       },
       answers: {
         p1: "",
@@ -584,111 +388,191 @@
       p1: {
         title: "Qual é o seu motivo de contato hoje com um Consultor do PagBank?",
         options: [
-          { label: "🤑 Comprar maquininha PagBank", short: "Comprar Pag", whatsappLabel: "Comprar Pag", next: "p3" },
-          { label: "🛠 Preciso de suporte (taxas, entrega, uso)", short: "Suporte", whatsappLabel: "Suporte", next: "p2" },
-          { label: "💳 Crédito ou cartão (empréstimo, limite)", short: "Crédito/cartão", whatsappLabel: "Crédito/cartão", next: "p2" }
+          {
+            label: "🤑 Comprar maquininha PagBank",
+            short: "Comprar Pag",
+            whatsappLabel: "Comprar Pag",
+            next: "p3"
+          },
+          {
+            label: "🛠 Preciso de suporte (taxas, entrega, uso)",
+            short: "Suporte",
+            whatsappLabel: "Suporte",
+            next: "p2"
+          },
+          {
+            label: "💳 Crédito ou cartão (empréstimo, limite)",
+            short: "Crédito/cartão",
+            whatsappLabel: "Crédito/cartão",
+            next: "p2"
+          }
         ]
       },
 
       p2: {
         title: "Este canal é exclusivo para vendas de maquininhas do PagBank, para outros assuntos, fale com a Central pelo telefone 0800-728-2174 (opção 7, depois opção 2).",
         options: [
-          { label: "✅ Entendi, finalizar perguntas.", short: "Entendi", whatsappLabel: "Entendi", next: "e3" },
-          { label: "🛍️ Ótimo, comprar maquininha", short: "Comprar maquininha", whatsappLabel: "Comprar maquininha", next: "p3" }
+          {
+            label: "✅ Entendi, finalizar perguntas.",
+            short: "Entendi",
+            whatsappLabel: "Entendi",
+            next: "e3"
+          },
+          {
+            label: "🛍️ Ótimo, comprar maquininha",
+            short: "Comprar maquininha",
+            whatsappLabel: "Comprar maquininha",
+            next: "p3"
+          }
         ]
       },
 
       p3: {
         title: "Você já teve uma maquininha PagBank no seu CPF ou CNPJ?",
         options: [
-          { label: "❌ Nunca.", short: "Nunca", whatsappLabel: "Nunca", next: "p5" },
-          { label: "⏸ Já tive/tenho, porém não uso há mais de 6 meses.", short: "Sem uso +6m", whatsappLabel: "Sem uso +6m", next: "p5" },
-          { label: "✅ Tenho e uso atualmente.", short: "Tenho e uso", whatsappLabel: "Tenho e uso", next: "p4" }
+          {
+            label: "❌ Nunca.",
+            short: "Nunca",
+            whatsappLabel: "Nunca",
+            next: "p5"
+          },
+          {
+            label: "⏸ Já tive/tenho, porém não uso há mais de 6 meses.",
+            short: "Sem uso +6m",
+            whatsappLabel: "Sem uso +6m",
+            next: "p5"
+          },
+          {
+            label: "✅ Tenho e uso atualmente.",
+            short: "Tenho e uso",
+            whatsappLabel: "Tenho e uso",
+            next: "p4"
+          }
         ]
       },
 
       p4: {
         title: "Você tem algum CPF ou CNPJ que nunca teve maquininha PagBank ou está sem uso há mais de 6 meses para aproveitar essa oferta?",
         options: [
-          { label: "✅ Sim", short: "Sim", whatsappLabel: "Sim", next: "p5" },
-          { label: "❌ Não", short: "Não", whatsappLabel: "Não", next: "e2" }
+          {
+            label: "✅ Sim",
+            short: "Sim",
+            whatsappLabel: "Sim",
+            next: "p5"
+          },
+          {
+            label: "❌ Não",
+            short: "Não",
+            whatsappLabel: "Não",
+            next: "e2"
+          }
         ]
       },
 
       p5: {
         title: "Qual é o seu faturamento médio mensal atualmente?",
         options: [
-          { label: "💰 Acima de R$ 2.000", short: "+ de 2k", whatsappLabel: "+ de 2k", next: "p6" },
-          { label: "💰 Acima de R$ 5.000", short: "+ de 5k", whatsappLabel: "+ de 5k", next: "p6" },
-          { label: "💰 Acima de R$ 10.000", short: "+ de 10k", whatsappLabel: "+ de 10k", next: "p6" },
-          { label: "💰 Acima de R$ 20.000", short: "+ de 20k", whatsappLabel: "+ de 20k", next: "p6" },
-          { label: "💰 Acima de R$ 40.000", short: "+ de 40k", whatsappLabel: "+ de 40k", next: "p6" },
-          { label: "💰 Acima de R$ 80.000", short: "+ de 80k", whatsappLabel: "+ de 80k", next: "p6" },
-          { label: "⬇️ Até R$ 2.000", short: "Até 2k", whatsappLabel: "Até 2k", next: "p6" }
+          {
+            label: "💰 Acima de R$ 2.000",
+            short: "+ de 2k",
+            whatsappLabel: "+ de 2k",
+            next: "p6"
+          },
+          {
+            label: "💰 Acima de R$ 5.000",
+            short: "+ de 5k",
+            whatsappLabel: "+ de 5k",
+            next: "p6"
+          },
+          {
+            label: "💰 Acima de R$ 10.000",
+            short: "+ de 10k",
+            whatsappLabel: "+ de 10k",
+            next: "p6"
+          },
+          {
+            label: "💰 Acima de R$ 20.000",
+            short: "+ de 20k",
+            whatsappLabel: "+ de 20k",
+            next: "p6"
+          },
+          {
+            label: "💰 Acima de R$ 40.000",
+            short: "+ de 40k",
+            whatsappLabel: "+ de 40k",
+            next: "p6"
+          },
+          {
+            label: "💰 Acima de R$ 80.000",
+            short: "+ de 80k",
+            whatsappLabel: "+ de 80k",
+            next: "p6"
+          },
+          {
+            label: "⬇️ Até R$ 2.000",
+            short: "Até 2k",
+            whatsappLabel: "Até 2k",
+            next: "p6"
+          }
         ]
       },
 
       p6: {
         title: "Quando você pretende comprar a maquininha do PagBank?",
         options: [
-          { label: "🚀 Preciso para esta semana.", short: "Esta semana", whatsappLabel: "Esta semana", next: "p7" },
-          { label: "📅 Preciso para este mês.", short: "Este mês", whatsappLabel: "Este mês", next: "p7" },
-          { label: "🔎 Estou pesquisando preços e taxas.", short: "Pesquisando", whatsappLabel: "Pesquisando", next: "p7" }
+          {
+            label: "🚀 Preciso para esta semana.",
+            short: "Esta semana",
+            whatsappLabel: "Esta semana",
+            next: "p7"
+          },
+          {
+            label: "📅 Preciso para este mês.",
+            short: "Este mês",
+            whatsappLabel: "Este mês",
+            next: "p7"
+          },
+          {
+            label: "🔎 Estou pesquisando preços e taxas.",
+            short: "Pesquisando",
+            whatsappLabel: "Pesquisando",
+            next: "p7"
+          }
         ]
       },
 
       p7: {
         title: "Qual valor você tem disponível hoje para investir em uma maquininha do PagBank?",
         options: [
-          { label: "🤑 R$ 59 ou mais", short: "R$ 59+", whatsappLabel: "R$ 59+", next: "e1" },
-          { label: "🤑 R$ 109 ou mais", short: "R$ 109+", whatsappLabel: "R$ 109+", next: "e1" },
-          { label: "🤑 R$ 199 ou mais", short: "R$ 199+", whatsappLabel: "R$ 199+", next: "e1" },
-          { label: "⬇️ Até R$ 59", short: "Até R$ 59", whatsappLabel: "Até R$ 59", next: "e2" }
+          {
+            label: "🤑 R$ 59 ou mais",
+            short: "R$ 59+",
+            whatsappLabel: "R$ 59+",
+            next: "e1"
+          },
+          {
+            label: "🤑 R$ 109 ou mais",
+            short: "R$ 109+",
+            whatsappLabel: "R$ 109+",
+            next: "e1"
+          },
+          {
+            label: "🤑 R$ 199 ou mais",
+            short: "R$ 199+",
+            whatsappLabel: "R$ 199+",
+            next: "e1"
+          },
+          {
+            label: "⬇️ Até R$ 59",
+            short: "Até R$ 59",
+            whatsappLabel: "Até R$ 59",
+            next: "e2"
+          }
         ]
       }
     };
 
     const app = document.getElementById("app");
-    const exitModal = document.getElementById("exitModal");
-    const btnRecoverExit = document.getElementById("btnRecoverExit");
-    const btnConfirmExit = document.getElementById("btnConfirmExit");
-
-    btnRecoverExit.addEventListener("click", () => {
-      closeExitModal();
-      state.currentStep = "e2data";
-      render();
-    });
-
-    btnConfirmExit.addEventListener("click", async () => {
-      closeExitModal();
-
-      pushDataLayerEvent("quiz_closed_flow", {
-        final_type: "disqualified_closed",
-        origin_detected: state.origin || ""
-      });
-
-      await sendToAppsScript("quiz_finished", {
-        final_type: "disqualified_closed"
-      });
-
-      exitSiteByOrigin();
-    });
-
-    exitModal.addEventListener("click", (e) => {
-      if (e.target === exitModal) closeExitModal();
-    });
-
-    function openExitModal() {
-      exitModal.classList.add("show");
-      exitModal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeExitModal() {
-      exitModal.classList.remove("show");
-      exitModal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
 
     function render() {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -710,11 +594,6 @@
 
       if (state.currentStep === "e2") {
         renderResultDisqualified();
-        return;
-      }
-
-      if (state.currentStep === "e2data") {
-        renderDisqualifiedDataStep();
         return;
       }
 
@@ -939,247 +818,48 @@
           <div class="subtitle">
             Infelizmente, pelas informações que você nos passou, o PagBank não será a opção ideal para você neste momento.
             <br><br>
-            Mas calma! Ainda podemos verificar <strong>outras opções de maquininhas</strong> que talvez atendam melhor o seu perfil, com <strong>taxas mais baixas</strong>, <strong>sem aluguel ou mensalidade</strong> e opções de investimento <strong>por menos de R$ 100,00</strong>. 🤩
+            No entanto, também trabalhamos com o Mercado Pago e outras soluções, que talvez atendam melhor sua necessidade,
+            desde que você nunca tenha trabalhado com elas e tenha a partir de R$ 130,00 para investir em uma maquininha.
+            <br><br>
+            Caso você atenda a esses requisitos, clique no botão abaixo para saber mais.
           </div>
 
           <div class="button-stack">
-            <button class="button button-attention" id="btnOpenOtherProposals">VER OUTRAS PROPOSTAS</button>
-            <button class="button button-danger" id="btnCloseDisqualified">FECHAR FORMULÁRIO</button>
+            <button class="button button-secondary" id="btnCloseDisqualified">FECHAR FORMULÁRIO</button>
+
+            <button class="button" id="btnWhatsDisqualified">
+              ${buildWhatsAppIconHtml()}
+              <span>VER OUTRAS PROPOSTAS</span>
+            </button>
           </div>
         </div>
       `;
 
-      document.getElementById("btnOpenOtherProposals").addEventListener("click", () => {
-        state.currentStep = "e2data";
-        render();
-      });
-
-      document.getElementById("btnCloseDisqualified").addEventListener("click", () => {
-        openExitModal();
-      });
-    }
-
-    function renderDisqualifiedDataStep() {
-      app.innerHTML = `
-        <div>
-          <div class="compact-box">
-            <div class="compact-text">
-              <strong>Ótimo, que bom que você se interessou!</strong><br><br>
-              Pra gente prosseguir, preciso apenas de alguns dados rápidos para validar <strong>uma proposta personalizada pra você</strong>!
-            </div>
-
-            <div class="field">
-              <label for="cpf">CPF <span class="required">*</span></label>
-              <input
-                type="tel"
-                id="cpf"
-                name="cpf"
-                placeholder="000.000.000-00"
-                inputmode="numeric"
-                autocomplete="off"
-                value="${escapeHtml(formatCPF(state.lead.cpf))}"
-              />
-              <div class="error" id="error-cpf"></div>
-              <div class="lgpd-note">
-                Seus dados serão usados apenas para <strong>análise de proposta</strong> e não geram cadastro ou contratação automática.
-              </div>
-            </div>
-
-            <div id="cnpjQuestionWrap" class="${isValidCPF(state.lead.cpf) ? "" : "hidden"}">
-              <div class="field" style="margin-top:18px;">
-                <label>Você possui CNPJ?</label>
-
-                <div class="radio-group">
-                  <label class="radio-card ${state.lead.possuiCnpj === "sim" ? "selected" : ""}" for="possui-cnpj-sim">
-                    <input type="radio" id="possui-cnpj-sim" name="possui_cnpj" value="sim" ${state.lead.possuiCnpj === "sim" ? "checked" : ""} />
-                    <span class="radio-indicator"></span>
-                    <span class="radio-text">Sim</span>
-                  </label>
-
-                  <label class="radio-card ${state.lead.possuiCnpj === "nao" ? "selected" : ""}" for="possui-cnpj-nao">
-                    <input type="radio" id="possui-cnpj-nao" name="possui_cnpj" value="nao" ${state.lead.possuiCnpj === "nao" ? "checked" : ""} />
-                    <span class="radio-indicator"></span>
-                    <span class="radio-text">Não</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div id="cnpjFieldWrap" class="${state.lead.possuiCnpj === "sim" ? "" : "hidden"}">
-              <div class="field">
-                <label for="cnpj">CNPJ <span class="required">*</span></label>
-                <input
-                  type="tel"
-                  id="cnpj"
-                  name="cnpj"
-                  placeholder="00.000.000/0001-00"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  value="${escapeHtml(formatCNPJ(state.lead.cnpj))}"
-                />
-                <div class="error" id="error-cnpj"></div>
-              </div>
-            </div>
-
-            <div id="otherProposalBtnWrap" class="${canShowOtherProposalButton() ? "" : "hidden"}">
-              <button class="button" id="btnGoOtherWhats">
-                ${buildWhatsAppIconHtml()}
-                <span>VER OUTRAS PROPOSTAS</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const cpfInput = document.getElementById("cpf");
-      const cnpjQuestionWrap = document.getElementById("cnpjQuestionWrap");
-      const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
-      const btnWrap = document.getElementById("otherProposalBtnWrap");
-
-      cpfInput.addEventListener("input", (e) => {
-        let digits = onlyDigits(e.target.value).slice(0, 11);
-        state.lead.cpf = digits;
-        e.target.value = formatCPF(digits);
-
-        validateCPFField(false);
-
-        const cpfOk = isValidCPF(digits);
-
-        if (!cpfOk) {
-          state.lead.possuiCnpj = "";
-          state.lead.cnpj = "";
-          cnpjQuestionWrap.classList.add("hidden");
-          cnpjFieldWrap.classList.add("hidden");
-          btnWrap.classList.add("hidden");
-          updatePossuiCnpjSelectionUI();
-          return;
-        }
-
-        cnpjQuestionWrap.classList.remove("hidden");
-        updateOtherProposalButtonVisibility();
-      });
-
-      cpfInput.addEventListener("blur", () => {
-        cpfInput.value = formatCPF(state.lead.cpf);
-        validateCPFField(true);
-        updateOtherProposalButtonVisibility();
-      });
-
-      document.querySelectorAll('input[name="possui_cnpj"]').forEach((radio) => {
-        radio.addEventListener("change", () => {
-          state.lead.possuiCnpj = radio.value;
-
-          if (radio.value === "nao") {
-            state.lead.cnpj = "";
-            cnpjFieldWrap.classList.add("hidden");
-          } else {
-            cnpjFieldWrap.classList.remove("hidden");
-          }
-
-          updatePossuiCnpjSelectionUI();
-          updateOtherProposalButtonVisibility();
-        });
-      });
-
-      const cnpjInput = document.getElementById("cnpj");
-      if (cnpjInput) {
-        cnpjInput.addEventListener("input", (e) => {
-          let digits = onlyDigits(e.target.value).slice(0, 14);
-          state.lead.cnpj = digits;
-          e.target.value = formatCNPJ(digits);
-          validateCNPJField(false);
-          updateOtherProposalButtonVisibility();
+      document.getElementById("btnCloseDisqualified").addEventListener("click", async () => {
+        pushDataLayerEvent("quiz_closed_flow", {
+          final_type: "disqualified_closed",
+          origin_detected: state.origin || ""
         });
 
-        cnpjInput.addEventListener("blur", () => {
-          cnpjInput.value = formatCNPJ(state.lead.cnpj);
-          validateCNPJField(true);
-          updateOtherProposalButtonVisibility();
+        await sendToAppsScript("quiz_finished", {
+          final_type: "disqualified_closed"
         });
-      }
 
-      const btnGoOtherWhats = document.getElementById("btnGoOtherWhats");
-      if (btnGoOtherWhats) {
-        btnGoOtherWhats.addEventListener("click", async () => {
-          const cpfOk = validateCPFField(true);
-          if (!cpfOk) return;
-
-          if (!state.lead.possuiCnpj) return;
-
-          if (state.lead.possuiCnpj === "sim") {
-            const cnpjOk = validateCNPJField(true);
-            if (!cnpjOk) return;
-          }
-
-          pushDataLayerEvent("quiz_whatsapp_click", {
-            destination: "disqualified",
-            final_type: "disqualified",
-            cpf: formatCPF(state.lead.cpf),
-            possui_cnpj: state.lead.possuiCnpj,
-            cnpj: state.lead.possuiCnpj === "sim" ? formatCNPJ(state.lead.cnpj) : "Nao possui"
-          });
-
-          await sendToAppsScript("quiz_finished", {
-            final_type: "disqualified",
-            cpf: formatCPF(state.lead.cpf),
-            possui_cnpj: state.lead.possuiCnpj,
-            cnpj: state.lead.possuiCnpj === "sim" ? formatCNPJ(state.lead.cnpj) : ""
-          });
-
-          openWhatsApp("disqualified");
-        });
-      }
-    }
-
-    function updatePossuiCnpjSelectionUI() {
-      document.querySelectorAll(".radio-card").forEach((card) => {
-        const input = card.querySelector('input[name="possui_cnpj"]');
-        card.classList.toggle("selected", !!input && input.checked);
+        exitSiteByOrigin();
       });
-    }
 
-    function updateOtherProposalButtonVisibility() {
-      const cnpjQuestionWrap = document.getElementById("cnpjQuestionWrap");
-      const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
-      const btnWrap = document.getElementById("otherProposalBtnWrap");
+      document.getElementById("btnWhatsDisqualified").addEventListener("click", async () => {
+        pushDataLayerEvent("quiz_whatsapp_click", {
+          destination: "disqualified",
+          final_type: "disqualified"
+        });
 
-      if (!cnpjQuestionWrap || !btnWrap) return;
+        await sendToAppsScript("quiz_finished", {
+          final_type: "disqualified"
+        });
 
-      if (!isValidCPF(state.lead.cpf)) {
-        cnpjQuestionWrap.classList.add("hidden");
-        if (cnpjFieldWrap) cnpjFieldWrap.classList.add("hidden");
-        btnWrap.classList.add("hidden");
-        return;
-      }
-
-      cnpjQuestionWrap.classList.remove("hidden");
-
-      if (state.lead.possuiCnpj === "nao") {
-        if (cnpjFieldWrap) cnpjFieldWrap.classList.add("hidden");
-        btnWrap.classList.remove("hidden");
-        return;
-      }
-
-      if (state.lead.possuiCnpj === "sim") {
-        if (cnpjFieldWrap) cnpjFieldWrap.classList.remove("hidden");
-
-        if (isValidCNPJ(state.lead.cnpj)) {
-          btnWrap.classList.remove("hidden");
-        } else {
-          btnWrap.classList.add("hidden");
-        }
-        return;
-      }
-
-      if (cnpjFieldWrap) cnpjFieldWrap.classList.add("hidden");
-      btnWrap.classList.add("hidden");
-    }
-
-    function canShowOtherProposalButton() {
-      if (!isValidCPF(state.lead.cpf)) return false;
-      if (state.lead.possuiCnpj === "nao") return true;
-      if (state.lead.possuiCnpj === "sim" && isValidCNPJ(state.lead.cnpj)) return true;
-      return false;
+        openWhatsApp("disqualified");
+      });
     }
 
     function renderResultCloseFlow() {
@@ -1247,17 +927,6 @@
       if (state.answers.p5) lines.push(`*Fat.:* ${state.answers.p5}`);
       if (state.answers.p6) lines.push(`*Qnd pret. comp.:* ${state.answers.p6}`);
       if (state.answers.p7) lines.push(`*Valor disp.:* ${state.answers.p7}`);
-
-      if (type === "disqualified") {
-        lines.push("");
-        lines.push(`*CPF:* ${formatCPF(state.lead.cpf) || "-"}`);
-
-        if (state.lead.possuiCnpj === "sim") {
-          lines.push(`*CNPJ:* ${formatCNPJ(state.lead.cnpj) || "-"}`);
-        } else {
-          lines.push(`*CNPJ:* Não possui`);
-        }
-      }
 
       return lines.join("\n");
     }
@@ -1361,28 +1030,8 @@
       return valid;
     }
 
-    function validateCPFField(showError = false) {
-      const errorEl = document.getElementById("error-cpf");
-      if (!errorEl) return isValidCPF(state.lead.cpf);
-
-      const valid = isValidCPF(state.lead.cpf);
-      const message = valid ? "" : "Digite um CPF válido.";
-      setErrorState(errorEl, valid, message, showError);
-      return valid;
-    }
-
-    function validateCNPJField(showError = false) {
-      const errorEl = document.getElementById("error-cnpj");
-      if (!errorEl) return isValidCNPJ(state.lead.cnpj);
-
-      const valid = isValidCNPJ(state.lead.cnpj);
-      const message = valid ? "" : "Digite um CNPJ válido.";
-      setErrorState(errorEl, valid, message, showError);
-      return valid;
-    }
-
     function setErrorState(errorEl, valid, message, showError) {
-      if (!showError || !errorEl) return;
+      if (!showError) return;
 
       if (valid) {
         errorEl.textContent = "";
@@ -1482,68 +1131,167 @@
       return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
     }
 
-    function formatCPF(value) {
-      const digits = onlyDigits(value).slice(0, 11);
-      if (!digits) return "";
-      if (digits.length <= 3) return digits;
-      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+    function onlyDigits(value) {
+      return String(value || "").replace(/\D/g, "");
     }
 
-    function formatCNPJ(value) {
-      const digits = onlyDigits(value).slice(0, 14);
-      if (!digits) return "";
-      if (digits.length <= 2) return digits;
-      if (digits.length <= 5) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-      if (digits.length <= 8) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
-      if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
-      return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12, 14)}`;
-    }
+    function isStrictSequential(value) {
+      const asc = "01234567890";
+      const desc = "09876543210";
 
-    function isValidCPF(value) {
-      const cpf = onlyDigits(value);
-
-      if (cpf.length !== 11) return false;
-      if (/^(\d)\1{10}$/.test(cpf)) return false;
-
-      let sum = 0;
-      for (let i = 0; i < 9; i++) {
-        sum += Number(cpf.charAt(i)) * (10 - i);
+      for (let i = 0; i <= asc.length - value.length; i++) {
+        if (asc.slice(i, i + value.length) === value) return true;
       }
-      let first = (sum * 10) % 11;
-      if (first === 10) first = 0;
-      if (first !== Number(cpf.charAt(9))) return false;
 
-      sum = 0;
-      for (let i = 0; i < 10; i++) {
-        sum += Number(cpf.charAt(i)) * (11 - i);
+      for (let i = 0; i <= desc.length - value.length; i++) {
+        if (desc.slice(i, i + value.length) === value) return true;
       }
-      let second = (sum * 10) % 11;
-      if (second === 10) second = 0;
-      if (second !== Number(cpf.charAt(10))) return false;
 
-      return true;
+      return false;
     }
 
-    function isValidCNPJ(value) {
-      const cnpj = onlyDigits(value);
+    function isObviouslyFakePhone(value) {
+      const numero = value.slice(2);
 
-      if (cnpj.length !== 14) return false;
-      if (/^(\d)\1{13}$/.test(cnpj)) return false;
+      if (/^(12345678|123456789|98765432|987654321)$/.test(numero)) return true;
+      if (/^(00000000|11111111|22222222|33333333|44444444|55555555|66666666|77777777|88888888|99999999)$/.test(numero)) return true;
+      if (/^(000000000|111111111|222222222|333333333|444444444|555555555|666666666|777777777|888888888|999999999)$/.test(numero)) return true;
 
-      const calc = (base, factors) => {
-        let total = 0;
-        for (let i = 0; i < factors.length; i++) {
-          total += Number(base.charAt(i)) * factors[i];
-        }
-        const rest = total % 11;
-        return rest < 2 ? 0 : 11 - rest;
+      return false;
+    }
+
+    function captureUTMs() {
+      const params = new URLSearchParams(window.location.search);
+
+      state.utms = {
+        utm_source: params.get("utm_source") || "",
+        utm_medium: params.get("utm_medium") || "",
+        utm_campaign: params.get("utm_campaign") || "",
+        utm_content: params.get("utm_content") || "",
+        utm_term: params.get("utm_term") || "",
+        fbclid: params.get("fbclid") || "",
+        gclid: params.get("gclid") || "",
+        ttclid: params.get("ttclid") || ""
+      };
+    }
+
+    function detectOrigin() {
+      const ref = (document.referrer || "").toLowerCase();
+      state.origin = ref;
+      sessionStorage.setItem("quiz_referrer", ref);
+    }
+
+    function exitSiteByOrigin() {
+      const ref = sessionStorage.getItem("quiz_referrer") || state.origin || "";
+
+      if (window.history.length > 1) {
+        history.back();
+        setTimeout(() => {
+          fallbackExit(ref);
+        }, 900);
+        return;
+      }
+
+      fallbackExit(ref);
+    }
+
+    function fallbackExit(ref) {
+      const origin = String(ref || "").toLowerCase();
+      const utmSource = String(state.utms.utm_source || "").toLowerCase();
+
+      if (origin.includes("instagram") || utmSource.includes("instagram")) {
+        window.location.href = "https://www.instagram.com/";
+        return;
+      }
+
+      if (origin.includes("facebook") || origin.includes("fb") || utmSource.includes("facebook")) {
+        window.location.href = "https://www.facebook.com/";
+        return;
+      }
+
+      if (origin.includes("tiktok") || utmSource.includes("tiktok")) {
+        window.location.href = "https://www.tiktok.com/";
+        return;
+      }
+
+      if (origin.includes("google") || utmSource.includes("google")) {
+        window.location.href = "https://www.google.com/";
+        return;
+      }
+
+      window.location.href = "about:blank";
+    }
+
+    function pushDataLayerEvent(eventName, extra = {}) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: eventName,
+        nome: state.lead.nome || "",
+        whatsapp: state.lead.whatsapp || "",
+        email: state.lead.email || "",
+        p1: state.answers.p1 || "",
+        p2: state.answers.p2 || "",
+        p3: state.answers.p3 || "",
+        p4: state.answers.p4 || "",
+        p5: state.answers.p5 || "",
+        p6: state.answers.p6 || "",
+        p7: state.answers.p7 || "",
+        ...state.utms,
+        ...extra
+      });
+    }
+
+    async function sendToAppsScript(eventType, extra = {}) {
+      if (!CONFIG.appsScriptUrl) return;
+
+      const payload = {
+        event_type: eventType,
+        timestamp: new Date().toISOString(),
+        nome: state.lead.nome || "",
+        whatsapp: state.lead.whatsapp || "",
+        email: state.lead.email || "",
+        p1: state.answers.p1 || "",
+        p2: state.answers.p2 || "",
+        p3: state.answers.p3 || "",
+        p4: state.answers.p4 || "",
+        p5: state.answers.p5 || "",
+        p6: state.answers.p6 || "",
+        p7: state.answers.p7 || "",
+        final_type: state.finalType || "",
+        page_url: window.location.href,
+        user_agent: navigator.userAgent,
+        referrer: state.origin || "",
+        ...state.utms,
+        ...extra
       };
 
-      const base12 = cnpj.slice(0, 12);
-      const digit1 = calc(base12, [5,4,3,2,9,8,7,6,5,4,3,2]);
-      const base13 = base12 + String(digit1);
-      const digit2 = calc(base13, [6,5,4,3,2,9,8,7,6,5,4,3,2]);
+      try {
+        await fetch(CONFIG.appsScriptUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.error("Erro ao enviar para Apps Script:", error);
+      }
+    }
 
-      return cnpj === base12
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    captureUTMs();
+    detectOrigin();
+    pushDataLayerEvent("quiz_start");
+    render();
+  </script>
+</body>
+</html>
