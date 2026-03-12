@@ -563,13 +563,7 @@
     }
 
     .modal-box::before {
-      content: "";
-      position: absolute;
-      inset: -80px auto auto -70px;
-      width: 170px;
-      height: 170px;
-      background: radial-gradient(circle, rgba(246,211,0,0.16), rgba(246,211,0,0));
-      pointer-events: none;
+      display: none;
     }
 
     .modal-title {
@@ -1277,10 +1271,14 @@
 
     function renderAlternativeProposalMarkup() {
       const firstName = getFirstName(state.lead.nome);
-      const cpfValid = state.alternate.cpf ? isValidCPF(state.alternate.cpf) : false;
+      const cpfDigits = state.alternate.cpf || "";
+      const cpfCompleted = cpfDigits.length === 11;
+      const cpfValid = cpfCompleted && isValidCPF(cpfDigits);
       const hasCnpj = state.alternate.hasCnpj;
       const cnpjVisible = cpfValid && hasCnpj === "Sim";
-      const cnpjValid = cnpjVisible ? isValidCNPJ(state.alternate.cnpj) : false;
+      const cnpjDigits = state.alternate.cnpj || "";
+      const cnpjCompleted = cnpjDigits.length === 14;
+      const cnpjValid = cnpjCompleted && isValidCNPJ(cnpjDigits);
       const canSubmit = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
 
       return `
@@ -1293,7 +1291,7 @@
           <div class="info-box">
             <form id="formAlternativeProposal" novalidate>
               <div class="field">
-                <label for="cpf">CPF <span class="required">*</span></label>
+                <label for="cpf">Primeiro me envie seu CPF <span class="required">*</span> 👇</label>
                 <input
                   type="tel"
                   id="cpf"
@@ -1320,7 +1318,7 @@
 
               <div id="cnpjFieldWrap" class="${cnpjVisible ? "" : "hidden"} fade-in" style="margin-top:18px;">
                 <div class="field">
-                  <label for="cnpj">CNPJ <span class="required">*</span></label>
+                  <label for="cnpj">Maravilha, ${escapeHtml(firstName)}! Me envie também seu CNPJ <span class="required">*</span></label>
                   <input
                     type="tel"
                     id="cnpj"
@@ -1339,9 +1337,17 @@
                   Tudo certo, ${escapeHtml(firstName)}! Clique no botão abaixo e fale comigo para saber mais da nova proposta.
                 </div>
 
+                <div class="warning-highlight">
+                  <div class="warning-icon">⚠️</div>
+                  <div class="warning-text">
+                    Não apague a mensagem automática que será enviada no WhatsApp.
+                    Ela ajuda a agilizar e facilitar o seu atendimento.
+                  </div>
+                </div>
+
                 <button type="submit" class="button pulse-invite" id="btnWhatsAlternative">
                   ${buildWhatsAppIconHtml()}
-                  <span>VER OUTRAS PROPOSTAS</span>
+                  <span>ENVIAR MENSAGEM</span>
                 </button>
               </div>
             </form>
@@ -1565,8 +1571,11 @@
           if (state.alternate.hasCnpj === "Sim") {
             setTimeout(() => {
               const cnpjField = document.getElementById("cnpj");
-              if (cnpjField) cnpjField.focus();
-            }, 60);
+              if (cnpjField) {
+                cnpjField.focus();
+                cnpjField.click();
+              }
+            }, 80);
           }
         });
       });
@@ -1651,7 +1660,10 @@
     function syncAlternativeProposalUI() {
       if (state.currentStep !== "d2") return;
 
-      const cpfValid = state.alternate.cpf ? isValidCPF(state.alternate.cpf) : false;
+      const cpfDigits = state.alternate.cpf || "";
+      const cpfCompleted = cpfDigits.length === 11;
+      const cpfValid = cpfCompleted && isValidCPF(cpfDigits);
+
       const hasCnpjBlock = document.getElementById("hasCnpjBlock");
       const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
       const finalCtaBox = document.getElementById("finalCtaBox");
@@ -1675,9 +1687,11 @@
         cnpjFieldWrap.classList.toggle("hidden", !shouldShowCnpj);
       }
 
+      const cnpjDigits = state.alternate.cnpj || "";
+      const cnpjCompleted = cnpjDigits.length === 14;
       const canSubmit = cpfValid && (
         state.alternate.hasCnpj === "Não" ||
-        (state.alternate.hasCnpj === "Sim" && isValidCNPJ(state.alternate.cnpj))
+        (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isValidCNPJ(cnpjDigits))
       );
 
       if (finalCtaBox) {
@@ -1986,16 +2000,18 @@
       if (!value) {
         valid = false;
         message = "Digite seu CPF.";
-      } else if (value.length !== 11) {
+      } else if (value.length < 11) {
         valid = false;
-        message = "Digite um CPF válido.";
+        message = "Digite seu CPF completo.";
       } else if (!isValidCPF(value)) {
         valid = false;
         message = "Digite um CPF válido.";
       }
 
       updateInputState(input, valid, value.length > 0);
-      setErrorState(errorEl, valid, message, showError);
+
+      const shouldShow = showError || value.length === 11;
+      setErrorState(errorEl, valid, message, shouldShow);
 
       return valid;
     }
@@ -2014,16 +2030,18 @@
       if (!value) {
         valid = false;
         message = "Digite seu CNPJ.";
-      } else if (value.length !== 14) {
+      } else if (value.length < 14) {
         valid = false;
-        message = "Digite um CNPJ válido.";
+        message = "Digite seu CNPJ completo.";
       } else if (!isValidCNPJ(value)) {
         valid = false;
         message = "Digite um CNPJ válido.";
       }
 
       updateInputState(input, valid, value.length > 0);
-      setErrorState(errorEl, valid, message, showError);
+
+      const shouldShow = showError || value.length === 14;
+      setErrorState(errorEl, valid, message, shouldShow);
 
       return valid;
     }
@@ -2033,6 +2051,9 @@
 
       if (!showError) {
         if (valid) {
+          errorEl.textContent = "";
+          errorEl.classList.remove("show");
+        } else {
           errorEl.textContent = "";
           errorEl.classList.remove("show");
         }
