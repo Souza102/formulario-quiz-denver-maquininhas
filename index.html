@@ -136,6 +136,7 @@
 
     .field {
       margin-bottom: 18px;
+      position: relative;
     }
 
     label {
@@ -207,6 +208,41 @@
       border-radius: 14px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .email-suggestions {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .email-suggestions.hidden {
+      display: none;
+    }
+
+    .email-suggestion-item {
+      width: 100%;
+      border: 1px solid #d8d8d8;
+      border-radius: 14px;
+      background: #f8f8f8;
+      color: #111111;
+      padding: 14px 16px;
+      font-size: 17px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+
+    .email-suggestion-item:hover {
+      transform: translateY(-1px);
+      border-color: #bdbdbd;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    }
+
+    .email-suggestion-item strong {
+      font-weight: 900;
     }
 
     .button {
@@ -724,6 +760,11 @@
       .choice-inline {
         grid-template-columns: 1fr;
       }
+
+      .email-suggestion-item {
+        font-size: 16px;
+        padding: 13px 14px;
+      }
     }
   </style>
 </head>
@@ -786,6 +827,17 @@
       "81","82","83","84","85","86","87","88","89",
       "91","92","93","94","95","96","97","98","99"
     ]);
+
+    const EMAIL_DOMAIN_GROUPS = {
+      g: ["gmail.com"],
+      o: ["outlook.com"],
+      h: ["hotmail.com"],
+      i: ["icloud.com"],
+      y: ["yahoo.com", "yahoo.com.br"],
+      l: ["live.com"],
+      u: ["uol.com.br"],
+      b: ["bol.com.br"]
+    };
 
     const QUIZ = {
       p1: {
@@ -1086,6 +1138,7 @@
                 spellcheck="false"
                 value="${escapeHtml(state.lead.email)}"
               />
+              <div id="emailSuggestions" class="email-suggestions hidden"></div>
               <div class="error" id="error-email"></div>
             </div>
 
@@ -1308,6 +1361,19 @@
         e.target.value = normalizedEmail;
         state.lead.email = normalizedEmail;
         validateEmail(false);
+        renderEmailSuggestions();
+      });
+
+      emailInput.addEventListener("focus", () => {
+        renderEmailSuggestions();
+      });
+
+      emailInput.addEventListener("blur", () => {
+        const normalizedEmail = normalizeEmail(emailInput.value);
+        emailInput.value = normalizedEmail;
+        state.lead.email = normalizedEmail;
+        validateEmail(true);
+        setTimeout(hideEmailSuggestions, 120);
       });
 
       nomeInput.addEventListener("blur", () => validateNome(true));
@@ -1317,13 +1383,6 @@
         state.lead.whatsapp = digits;
         whatsappInput.value = formatPhone(digits);
         validateWhatsapp(true);
-      });
-
-      emailInput.addEventListener("blur", () => {
-        const normalizedEmail = normalizeEmail(emailInput.value);
-        emailInput.value = normalizedEmail;
-        state.lead.email = normalizedEmail;
-        validateEmail(true);
       });
 
       form.addEventListener("submit", async (e) => {
@@ -1357,6 +1416,8 @@
         state.currentStep = "p1";
         render();
       });
+
+      renderEmailSuggestions();
     }
 
     function attachQuestionEvents() {
@@ -2180,6 +2241,98 @@
       if (/^(000000000|111111111|222222222|333333333|444444444|555555555|666666666|777777777|888888888|999999999)$/.test(numero)) return true;
 
       return false;
+    }
+
+    function getEmailSuggestions(value) {
+      const normalized = normalizeEmail(value);
+
+      if (!normalized || !normalized.includes("@")) return [];
+
+      const atIndex = normalized.indexOf("@");
+      const localPart = normalized.slice(0, atIndex);
+      const typedDomain = normalized.slice(atIndex + 1);
+
+      if (!localPart) return [];
+      if (normalized.split("@").length > 2) return [];
+
+      if (!typedDomain) return [];
+
+      const firstLetter = typedDomain.charAt(0);
+      const possibleDomains = EMAIL_DOMAIN_GROUPS[firstLetter] || [];
+
+      return possibleDomains
+        .filter((domain) => domain.startsWith(typedDomain) && domain !== typedDomain)
+        .map((domain) => {
+          const missingPart = domain.slice(typedDomain.length);
+          return {
+            localPart,
+            typedDomain,
+            fullDomain: domain,
+            fullEmail: `${localPart}@${domain}`,
+            previewHtml: `${escapeHtml(localPart)}@${escapeHtml(typedDomain)}<strong>${escapeHtml(missingPart)}</strong>`
+          };
+        });
+    }
+
+    function renderEmailSuggestions() {
+      const container = document.getElementById("emailSuggestions");
+      const emailInput = document.getElementById("email");
+
+      if (!container || !emailInput) return;
+
+      const suggestions = getEmailSuggestions(emailInput.value);
+
+      if (!suggestions.length) {
+        container.innerHTML = "";
+        container.classList.add("hidden");
+        return;
+      }
+
+      container.innerHTML = suggestions.map((suggestion, index) => `
+        <button
+          type="button"
+          class="email-suggestion-item"
+          data-email-suggestion="${escapeHtml(suggestion.fullEmail)}"
+          aria-label="Completar com ${escapeHtml(suggestion.fullEmail)}"
+        >
+          ${suggestion.previewHtml}
+        </button>
+      `).join("");
+
+      container.classList.remove("hidden");
+
+      container.querySelectorAll("[data-email-suggestion]").forEach((btn) => {
+        btn.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+        });
+
+        btn.addEventListener("click", () => {
+          applyEmailSuggestion(btn.getAttribute("data-email-suggestion"));
+        });
+      });
+    }
+
+    function applyEmailSuggestion(fullEmail) {
+      const emailInput = document.getElementById("email");
+      if (!emailInput || !fullEmail) return;
+
+      const normalizedEmail = normalizeEmail(fullEmail);
+      emailInput.value = normalizedEmail;
+      state.lead.email = normalizedEmail;
+
+      validateEmail(false);
+      hideEmailSuggestions();
+
+      emailInput.focus();
+      const end = emailInput.value.length;
+      emailInput.setSelectionRange(end, end);
+    }
+
+    function hideEmailSuggestions() {
+      const container = document.getElementById("emailSuggestions");
+      if (!container) return;
+      container.innerHTML = "";
+      container.classList.add("hidden");
     }
 
     function captureUTMs() {
