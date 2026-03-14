@@ -239,12 +239,18 @@
     }
 
     .consent-box {
-      margin-top: 8px;
+      margin-top: 10px;
       padding: 14px 14px 13px;
       border-radius: 16px;
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .consent-box.ready {
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
     }
 
     .consent-row {
@@ -283,10 +289,16 @@
       box-shadow: 0 0 0 0 rgba(246,211,0,0);
     }
 
+    .consent-box.ready .consent-check-ui {
+      border-color: rgba(246,211,0,0.75);
+      box-shadow: 0 0 0 3px rgba(246,211,0,0.08), 0 0 16px rgba(246,211,0,0.10);
+      animation: consentCheckPulse 1.7s ease-in-out infinite;
+    }
+
     .consent-check input:hover + .consent-check-ui,
     .consent-check input:focus + .consent-check-ui {
-      border-color: rgba(246,211,0,0.8);
-      box-shadow: 0 0 0 4px rgba(246,211,0,0.10);
+      border-color: rgba(246,211,0,0.85);
+      box-shadow: 0 0 0 4px rgba(246,211,0,0.10), 0 0 18px rgba(246,211,0,0.10);
       outline: none;
     }
 
@@ -294,6 +306,7 @@
       border-color: var(--yellow);
       background: rgba(246,211,0,0.12);
       box-shadow: 0 0 0 4px rgba(246,211,0,0.10), 0 0 18px rgba(246,211,0,0.14);
+      animation: none;
     }
 
     .consent-check input:checked + .consent-check-ui::after {
@@ -336,20 +349,19 @@
       width: 100%;
       border: none;
       border-radius: 16px;
-      background: var(--yellow);
-      color: #0b0b0b;
       font-weight: 900;
       font-size: 19px;
       padding: 18px 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, color 0.2s ease;
+      transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
       text-align: center;
-      box-shadow: 0 10px 28px rgba(246, 211, 0, 0.16);
+      position: relative;
+      overflow: hidden;
     }
 
     .button:hover {
@@ -413,23 +425,59 @@
       margin-top: 6px;
     }
 
-    .button-disabled-premium {
-      background: linear-gradient(180deg, rgba(246,211,0,0.18) 0%, rgba(246,211,0,0.10) 100%);
-      color: rgba(11,11,11,0.55);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.16),
-        0 0 0 1px rgba(246,211,0,0.12),
-        0 10px 20px rgba(246,211,0,0.05);
-      animation: disabledGlow 1.9s ease-in-out infinite;
+    .button-lead-disabled {
+      background: #161616;
+      color: rgba(255,255,255,0.58);
+      border: 1px solid #2f2f2f;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
       pointer-events: none;
     }
 
-    .button-enabled-premium {
+    .button-lead-waiting {
+      background: #1a1a1a;
+      color: #f1f1f1;
+      border: 1px solid rgba(246,211,0,0.20);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 0 1px rgba(246,211,0,0.05);
+      pointer-events: none;
+    }
+
+    .button-lead-active {
       background: var(--yellow);
       color: #0b0b0b;
+      border: 1px solid rgba(246,211,0,0.55);
       box-shadow: 0 10px 28px rgba(246, 211, 0, 0.16);
       animation: invitePulse 1.5s ease-in-out infinite;
       pointer-events: auto;
+    }
+
+    .button-progress-track {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .button-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 84%;
+      background: linear-gradient(90deg, rgba(246,211,0,0.10), rgba(246,211,0,0.22), rgba(246,211,0,0.10));
+      box-shadow: inset -1px 0 0 rgba(246,211,0,0.20);
+      animation: buttonNeedConsentGlow 1.6s ease-in-out infinite;
+    }
+
+    .button-content {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
 
     .question-title {
@@ -638,7 +686,7 @@
 
     .toggle-btn {
       width: 100%;
-      border: 1.8px solid rgba(255,255,255,0.12);
+      border: 1.8px solid rgba(255,255,255,0.14);
       background:
         linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%),
         #101010;
@@ -649,7 +697,6 @@
       font-weight: 800;
       cursor: pointer;
       transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, transform 0.14s ease;
-      animation: softInvite 2s ease-in-out infinite;
       min-height: 58px;
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.04),
@@ -752,7 +799,7 @@
     }
 
     .pulse-danger {
-      animation: dangerPulse 1.7s ease-in-out infinite;
+      animation: none;
     }
 
     .hidden {
@@ -875,22 +922,10 @@
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
     }
 
-    @keyframes disabledGlow {
-      0% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 0 rgba(246,211,0,0), 0 8px 16px rgba(246,211,0,0.04); }
-      50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 0 4px rgba(246,211,0,0.05), 0 10px 22px rgba(246,211,0,0.07); }
-      100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 0 rgba(246,211,0,0), 0 8px 16px rgba(246,211,0,0.04); }
-    }
-
     @keyframes dangerPulse {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0); }
       50% { transform: scale(1.01); box-shadow: 0 0 0 6px rgba(255,59,48,0.10), 0 0 24px rgba(255,59,48,0.16); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0); }
-    }
-
-    @keyframes softInvite {
-      0% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 18px rgba(0,0,0,0.16); }
-      50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 4px rgba(255,255,255,0.025), 0 10px 22px rgba(0,0,0,0.18); }
-      100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 18px rgba(0,0,0,0.16); }
     }
 
     @keyframes shineAcross {
@@ -906,6 +941,18 @@
     @keyframes modalPop {
       from { opacity: 0; transform: scale(0.97) translateY(8px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes consentCheckPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0.00), 0 0 10px rgba(246,211,0,0.06); }
+      50% { transform: scale(1.045); box-shadow: 0 0 0 5px rgba(246,211,0,0.10), 0 0 18px rgba(246,211,0,0.14); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0.00), 0 0 10px rgba(246,211,0,0.06); }
+    }
+
+    @keyframes buttonNeedConsentGlow {
+      0% { width: 76%; opacity: 0.72; }
+      50% { width: 86%; opacity: 1; }
+      100% { width: 76%; opacity: 0.72; }
     }
 
     @media (max-width: 540px) {
@@ -1303,7 +1350,7 @@
     }
 
     function renderLeadFormMarkup() {
-      const canAdvance = canAdvanceLeadStep();
+      const leadStatus = getLeadAdvanceStatus();
 
       return `
         <div>
@@ -1355,7 +1402,7 @@
               <div class="error" id="error-email"></div>
             </div>
 
-            <div class="consent-box">
+            <div class="consent-box ${leadStatus.stepReady ? "ready" : ""}">
               <div class="consent-row">
                 <label class="consent-check" for="consent">
                   <input
@@ -1369,7 +1416,7 @@
 
                 <div class="consent-copy">
                   <p class="consent-title">
-                    Autorizo o Denver Maquininhas a entrar em contato comigo por WhatsApp, e-mail ou telefone sobre meu interesse nas maquininhas e serviços.
+                    Autorizo o Denver Maquininhas a entrar em contato comigo por WhatsApp ou e-mail para enviar informações sobre maquininhas e serviços.
                   </p>
                   <div class="consent-note">
                     Ao marcar, você concorda com nossa
@@ -1382,11 +1429,16 @@
 
             <button
               type="submit"
-              class="button ${canAdvance ? "button-enabled-premium" : "button-disabled-premium"}"
+              class="button ${leadStatus.buttonClass}"
               id="btnNextLead"
-              ${canAdvance ? "" : "disabled"}
+              ${leadStatus.canSubmit ? "" : "disabled"}
             >
-              PRÓXIMO
+              ${leadStatus.showProgress ? `
+                <span class="button-progress-track" aria-hidden="true">
+                  <span class="button-progress-bar"></span>
+                </span>
+              ` : ""}
+              <span class="button-content">PRÓXIMO</span>
             </button>
           </form>
         </div>
@@ -1440,7 +1492,7 @@
             </div>
           </div>
 
-          <button class="button pulse-invite" id="btnWhatsQualified">
+          <button class="button button-lead-active" id="btnWhatsQualified">
             ${buildWhatsAppIconHtml()}
             <span>ENVIAR MENSAGEM</span>
           </button>
@@ -1462,7 +1514,7 @@
           </div>
 
           <div class="button-stack" style="margin-top:18px;">
-            <button class="button pulse-invite" id="btnOtherProposalsStart">
+            <button class="button button-lead-active" id="btnOtherProposalsStart">
               <span>VER OUTRAS PROPOSTAS</span>
             </button>
 
@@ -1490,7 +1542,7 @@
         <div>
           <h2>Ótimo ${escapeHtml(firstName)}, que bom que você se interessou!</h2>
           <div class="subtitle">
-            Pra gente prosseguir com a nova proposta, preciso apenas de alguns dados importantes para validar uma proposta personalizada pra você!
+            Pra gente prosseguir com a nova proposta, preciso apenas de alguns dados importantes para a análise:
           </div>
 
           <div class="info-box">
@@ -1534,7 +1586,7 @@
 
               <div id="cnpjFieldWrap" class="${cnpjVisible ? "" : "hidden"} fade-in" style="margin-top:18px;">
                 <div class="field">
-                  <label for="cnpj">Maravilha, ${escapeHtml(firstName)}! Me envie também seu CNPJ <span class="required">*</span></label>
+                  <label for="cnpj">Maravilha, ${escapeHtml(firstName)}! Me envie também seu CNPJ <span class="required">*</span> 👇</label>
                   <input
                     type="text"
                     id="cnpj"
@@ -1563,7 +1615,7 @@
                   </div>
                 </div>
 
-                <button type="submit" class="button pulse-invite" id="btnWhatsAlternative">
+                <button type="submit" class="button button-lead-active" id="btnWhatsAlternative">
                   ${buildWhatsAppIconHtml()}
                   <span>ENVIAR MENSAGEM</span>
                 </button>
@@ -1681,9 +1733,8 @@
         if (!nomeOk || !whatsappOk || !emailOk || !consentOk) return;
 
         btnNextLead.disabled = true;
-        btnNextLead.textContent = "CARREGANDO...";
-        btnNextLead.classList.remove("button-enabled-premium");
-        btnNextLead.classList.add("button-disabled-premium");
+        btnNextLead.className = "button button-lead-disabled";
+        btnNextLead.innerHTML = `<span class="button-content">CARREGANDO...</span>`;
 
         pushDataLayerEvent("quiz_contact_step_completed", {
           nome: state.lead.nome,
@@ -2001,7 +2052,7 @@
             </div>
 
             <div class="modal-actions">
-              <button class="button pulse-invite" id="btnModalRecover">OK, VER PROPOSTAS</button>
+              <button class="button button-lead-active" id="btnModalRecover">OK, VER PROPOSTAS</button>
               <button class="button button-outline" id="btnModalClose">FECHAR FORMULÁRIO</button>
             </div>
           </div>
@@ -2259,7 +2310,7 @@
     function validateConsent(showError = false) {
       const errorEl = document.getElementById("error-consent");
       const valid = !!state.lead.consent;
-      const message = "Para continuar, é necessário autorizar o contato pelo WhatsApp.";
+      const message = "Para continuar, é necessário autorizar o contato pelo WhatsApp ou e-mail.";
       setErrorState(errorEl, valid, message, showError);
       return valid;
     }
@@ -2370,24 +2421,62 @@
       }
     }
 
-    function canAdvanceLeadStep() {
-      return (
+    function getLeadAdvanceStatus() {
+      const fieldsValid = (
         isLeadNameValidValue(state.lead.nome) &&
         isLeadWhatsappValidValue(state.lead.whatsapp) &&
-        isLeadEmailValidValue(state.lead.email) &&
-        !!state.lead.consent
+        isLeadEmailValidValue(state.lead.email)
       );
+
+      const canSubmit = fieldsValid && !!state.lead.consent;
+
+      if (canSubmit) {
+        return {
+          stepReady: true,
+          canSubmit: true,
+          showProgress: false,
+          buttonClass: "button-lead-active"
+        };
+      }
+
+      if (fieldsValid && !state.lead.consent) {
+        return {
+          stepReady: true,
+          canSubmit: false,
+          showProgress: true,
+          buttonClass: "button-lead-waiting"
+        };
+      }
+
+      return {
+        stepReady: false,
+        canSubmit: false,
+        showProgress: false,
+        buttonClass: "button-lead-disabled"
+      };
     }
 
     function updateLeadButtonState() {
       const btn = document.getElementById("btnNextLead");
+      const consentBox = document.querySelector(".consent-box");
       if (!btn) return;
 
-      const enabled = canAdvanceLeadStep();
+      const leadStatus = getLeadAdvanceStatus();
 
-      btn.disabled = !enabled;
-      btn.classList.toggle("button-enabled-premium", enabled);
-      btn.classList.toggle("button-disabled-premium", !enabled);
+      btn.disabled = !leadStatus.canSubmit;
+      btn.className = `button ${leadStatus.buttonClass}`;
+      btn.innerHTML = `
+        ${leadStatus.showProgress ? `
+          <span class="button-progress-track" aria-hidden="true">
+            <span class="button-progress-bar"></span>
+          </span>
+        ` : ""}
+        <span class="button-content">PRÓXIMO</span>
+      `;
+
+      if (consentBox) {
+        consentBox.classList.toggle("ready", leadStatus.stepReady);
+      }
     }
 
     function maybeAdvanceFromWhatsappToEmail() {
