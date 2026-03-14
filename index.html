@@ -139,6 +139,10 @@
       position: relative;
     }
 
+    .field-tight {
+      margin-bottom: 14px;
+    }
+
     label {
       display: block;
       font-size: 21px;
@@ -199,17 +203,6 @@
       margin-top: 8px;
     }
 
-    .lgpd-note {
-      margin-top: 10px;
-      color: #dcdcdc;
-      font-size: 13px;
-      line-height: 1.6;
-      padding: 12px 13px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
     .email-suggestions {
       margin-top: 8px;
       display: flex;
@@ -245,6 +238,100 @@
       font-weight: 900;
     }
 
+    .consent-box {
+      margin-top: 8px;
+      padding: 14px 14px 13px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .consent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .consent-check {
+      position: relative;
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      margin-top: 1px;
+    }
+
+    .consent-check input {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .consent-check-ui {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.14s ease;
+      box-shadow: 0 0 0 0 rgba(246,211,0,0);
+    }
+
+    .consent-check input:hover + .consent-check-ui,
+    .consent-check input:focus + .consent-check-ui {
+      border-color: rgba(246,211,0,0.8);
+      box-shadow: 0 0 0 4px rgba(246,211,0,0.10);
+      outline: none;
+    }
+
+    .consent-check input:checked + .consent-check-ui {
+      border-color: var(--yellow);
+      background: rgba(246,211,0,0.12);
+      box-shadow: 0 0 0 4px rgba(246,211,0,0.10), 0 0 18px rgba(246,211,0,0.14);
+    }
+
+    .consent-check input:checked + .consent-check-ui::after {
+      content: "";
+      width: 6px;
+      height: 11px;
+      border-right: 3px solid var(--yellow);
+      border-bottom: 3px solid var(--yellow);
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    .consent-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .consent-title {
+      color: #f2f2f2;
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .consent-note {
+      margin-top: 6px;
+      color: #cfcfcf;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .consent-note a {
+      color: #fff2a6;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
     .button {
       width: 100%;
       border: none;
@@ -256,7 +343,7 @@
       padding: 18px 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease, color 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -275,9 +362,9 @@
     }
 
     .button:disabled {
-      opacity: 0.7;
       cursor: not-allowed;
-      filter: grayscale(0.08);
+      transform: none;
+      filter: none;
     }
 
     .button-secondary {
@@ -324,6 +411,25 @@
       flex-direction: column;
       gap: 12px;
       margin-top: 6px;
+    }
+
+    .button-disabled-premium {
+      background: linear-gradient(180deg, rgba(246,211,0,0.18) 0%, rgba(246,211,0,0.10) 100%);
+      color: rgba(11,11,11,0.55);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 1px rgba(246,211,0,0.12),
+        0 10px 20px rgba(246,211,0,0.05);
+      animation: disabledGlow 1.9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .button-enabled-premium {
+      background: var(--yellow);
+      color: #0b0b0b;
+      box-shadow: 0 10px 28px rgba(246, 211, 0, 0.16);
+      animation: invitePulse 1.5s ease-in-out infinite;
+      pointer-events: auto;
     }
 
     .question-title {
@@ -527,13 +633,15 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 14px;
     }
 
     .toggle-btn {
       width: 100%;
-      border: 2px solid #303030;
-      background: #101010;
+      border: 1.8px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%),
+        #101010;
       color: #ffffff;
       border-radius: 16px;
       padding: 16px 12px;
@@ -542,19 +650,101 @@
       cursor: pointer;
       transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, transform 0.14s ease;
       animation: softInvite 2s ease-in-out infinite;
+      min-height: 58px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 8px 18px rgba(0,0,0,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toggle-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(246,211,0,0) 0%, rgba(246,211,0,0.09) 50%, rgba(246,211,0,0) 100%);
+      transform: translateX(-120%);
+      transition: transform 0.55s ease;
+      pointer-events: none;
     }
 
     .toggle-btn:hover {
-      border-color: #505050;
+      border-color: rgba(246,211,0,0.42);
       transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 0 3px rgba(246,211,0,0.07),
+        0 12px 22px rgba(0,0,0,0.20);
+    }
+
+    .toggle-btn:hover::before {
+      transform: translateX(120%);
     }
 
     .toggle-btn.active {
       border-color: var(--yellow);
-      background: rgba(246,211,0,0.08);
+      background:
+        linear-gradient(180deg, rgba(246,211,0,0.15) 0%, rgba(246,211,0,0.07) 100%),
+        #101010;
       color: #ffffff;
-      box-shadow: 0 0 0 4px rgba(246,211,0,0.12), 0 0 22px rgba(246,211,0,0.08);
+      box-shadow:
+        0 0 0 4px rgba(246,211,0,0.12),
+        0 0 22px rgba(246,211,0,0.10),
+        0 10px 22px rgba(0,0,0,0.18);
       animation: selectedGlow 0.7s ease 1;
+    }
+
+    .toggle-btn.active::before {
+      transform: translateX(120%);
+    }
+
+    .section-intro-note {
+      margin-top: 12px;
+      color: #e4e4e4;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .trust-box {
+      margin-top: 12px;
+      padding: 14px 14px 14px 15px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(44,186,93,0.10) 0%, rgba(44,186,93,0.05) 100%);
+      border: 1px solid rgba(44,186,93,0.24);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 0 0 1px rgba(44,186,93,0.05);
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+    }
+
+    .trust-icon {
+      font-size: 19px;
+      line-height: 1;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    .trust-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .trust-title {
+      color: #dbffe8;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 4px;
+    }
+
+    .trust-text {
+      color: #d7f6e2;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0;
+      font-weight: 700;
     }
 
     .pulse-invite {
@@ -685,6 +875,12 @@
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(246,211,0,0); }
     }
 
+    @keyframes disabledGlow {
+      0% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 0 rgba(246,211,0,0), 0 8px 16px rgba(246,211,0,0.04); }
+      50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 0 4px rgba(246,211,0,0.05), 0 10px 22px rgba(246,211,0,0.07); }
+      100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 0 rgba(246,211,0,0), 0 8px 16px rgba(246,211,0,0.04); }
+    }
+
     @keyframes dangerPulse {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0); }
       50% { transform: scale(1.01); box-shadow: 0 0 0 6px rgba(255,59,48,0.10), 0 0 24px rgba(255,59,48,0.16); }
@@ -692,9 +888,9 @@
     }
 
     @keyframes softInvite {
-      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
-      50% { box-shadow: 0 0 0 4px rgba(255,255,255,0.03); }
-      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      0% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 18px rgba(0,0,0,0.16); }
+      50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 4px rgba(255,255,255,0.025), 0 10px 22px rgba(0,0,0,0.18); }
+      100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 18px rgba(0,0,0,0.16); }
     }
 
     @keyframes shineAcross {
@@ -758,12 +954,23 @@
       }
 
       .choice-inline {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .toggle-btn {
+        min-height: 56px;
+        padding: 15px 10px;
+        font-size: 16px;
       }
 
       .email-suggestion-item {
         font-size: 16px;
         padding: 13px 14px;
+      }
+
+      .fade-in {
+        animation: none;
       }
     }
   </style>
@@ -782,6 +989,7 @@
       whatsappNumber: "5531991741433",
       whatsappIconUrl: "https://denvermaquininhas.com.br/wp-content/uploads/2026/03/ICON-WPP.png",
       appsScriptUrl: "",
+      privacyPolicyUrl: "https://denvermaquininhas.com.br/politica-de-privacidade/",
       titleLeadForm: "Antes de continuar, me diga como posso falar com você 👇",
       subtitleLeadForm: "Leva menos de 10 segundos."
     };
@@ -790,7 +998,8 @@
       lead: {
         nome: "",
         whatsapp: "",
-        email: ""
+        email: "",
+        consent: false
       },
       answers: {
         p1: "",
@@ -812,6 +1021,8 @@
       origin: "",
       modalOpen: false
     };
+
+    let whatsappAutoAdvanced = false;
 
     const DDD_VALIDOS = new Set([
       "11","12","13","14","15","16","17","18","19",
@@ -1032,7 +1243,7 @@
 
     function render() {
       closeModal(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo(0, 0);
 
       app.innerHTML = `
         ${buildProgressBar()}
@@ -1092,6 +1303,8 @@
     }
 
     function renderLeadFormMarkup() {
+      const canAdvance = canAdvanceLeadStep();
+
       return `
         <div>
           <h1>${escapeHtml(CONFIG.titleLeadForm)}</h1>
@@ -1125,7 +1338,7 @@
               <div class="error" id="error-whatsapp"></div>
             </div>
 
-            <div class="field">
+            <div class="field field-tight">
               <label for="email">E-mail <span class="required">*</span></label>
               <input
                 type="email"
@@ -1142,7 +1355,39 @@
               <div class="error" id="error-email"></div>
             </div>
 
-            <button type="submit" class="button pulse-invite" id="btnNextLead">PRÓXIMO</button>
+            <div class="consent-box">
+              <div class="consent-row">
+                <label class="consent-check" for="consent">
+                  <input
+                    type="checkbox"
+                    id="consent"
+                    name="consent"
+                    ${state.lead.consent ? "checked" : ""}
+                  />
+                  <span class="consent-check-ui" aria-hidden="true"></span>
+                </label>
+
+                <div class="consent-copy">
+                  <p class="consent-title">
+                    Autorizo o Denver Maquininhas a entrar em contato comigo por WhatsApp, e-mail ou telefone sobre meu interesse nas maquininhas e serviços.
+                  </p>
+                  <div class="consent-note">
+                    Ao marcar, você concorda com nossa
+                    <a href="${escapeHtml(CONFIG.privacyPolicyUrl)}" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.
+                  </div>
+                </div>
+              </div>
+              <div class="error" id="error-consent"></div>
+            </div>
+
+            <button
+              type="submit"
+              class="button ${canAdvance ? "button-enabled-premium" : "button-disabled-premium"}"
+              id="btnNextLead"
+              ${canAdvance ? "" : "disabled"}
+            >
+              PRÓXIMO
+            </button>
           </form>
         </div>
       `;
@@ -1262,8 +1507,15 @@
                   value="${escapeHtml(formatCPF(state.alternate.cpf))}"
                 />
                 <div class="error" id="error-cpf"></div>
-                <div class="lgpd-note">
-                  Seus dados serão usados apenas para análise de proposta e não geram cadastro ou contratação automática.
+
+                <div class="trust-box">
+                  <div class="trust-icon">🔒</div>
+                  <div class="trust-content">
+                    <div class="trust-title">Seus dados são usados somente para análise da proposta.</div>
+                    <p class="trust-text">
+                      Informar CPF ou CNPJ aqui não gera cadastro, contratação automática nem qualquer cobrança.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -1273,6 +1525,10 @@
                 <div class="choice-inline">
                   <button type="button" class="toggle-btn ${hasCnpj === "Sim" ? "active" : ""}" data-has-cnpj="Sim">Sim</button>
                   <button type="button" class="toggle-btn ${hasCnpj === "Não" ? "active" : ""}" data-has-cnpj="Não">Não</button>
+                </div>
+
+                <div class="section-intro-note">
+                  Isso ajuda a verificar opções compatíveis com o seu perfil, sem mudar a análise principal.
                 </div>
               </div>
 
@@ -1338,18 +1594,22 @@
       const nomeInput = document.getElementById("nome");
       const whatsappInput = document.getElementById("whatsapp");
       const emailInput = document.getElementById("email");
+      const consentInput = document.getElementById("consent");
       const btnNextLead = document.getElementById("btnNextLead");
 
       nomeInput.addEventListener("input", (e) => {
         handleNameInputFormat(e);
         state.lead.nome = normalizeName(e.target.value);
         validateNome(false);
+        updateLeadButtonState();
       });
 
       whatsappInput.addEventListener("input", (e) => {
         handlePhoneInputMask(e);
         state.lead.whatsapp = normalizeBrazilPhoneInput(e.target.value);
         validateWhatsapp(false);
+        maybeAdvanceFromWhatsappToEmail();
+        updateLeadButtonState();
       });
 
       emailInput.addEventListener("keydown", (e) => {
@@ -1362,6 +1622,7 @@
         state.lead.email = normalizedEmail;
         validateEmail(false);
         renderEmailSuggestions();
+        updateLeadButtonState();
       });
 
       emailInput.addEventListener("focus", () => {
@@ -1373,17 +1634,30 @@
         emailInput.value = normalizedEmail;
         state.lead.email = normalizedEmail;
         validateEmail(true);
+        updateLeadButtonState();
         setTimeout(hideEmailSuggestions, 120);
       });
 
-      nomeInput.addEventListener("blur", () => validateNome(true));
+      nomeInput.addEventListener("blur", () => {
+        validateNome(true);
+        updateLeadButtonState();
+      });
 
       whatsappInput.addEventListener("blur", () => {
         const digits = normalizeBrazilPhoneInput(whatsappInput.value);
         state.lead.whatsapp = digits;
         whatsappInput.value = formatPhone(digits);
         validateWhatsapp(true);
+        updateLeadButtonState();
       });
+
+      if (consentInput) {
+        consentInput.addEventListener("change", () => {
+          state.lead.consent = !!consentInput.checked;
+          validateConsent(false);
+          updateLeadButtonState();
+        });
+      }
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1391,6 +1665,7 @@
         state.lead.nome = normalizeName(nomeInput.value.trim());
         state.lead.whatsapp = normalizeBrazilPhoneInput(whatsappInput.value);
         state.lead.email = normalizeEmail(emailInput.value);
+        state.lead.consent = !!(consentInput && consentInput.checked);
 
         nomeInput.value = state.lead.nome;
         whatsappInput.value = formatPhone(state.lead.whatsapp);
@@ -1399,25 +1674,34 @@
         const nomeOk = validateNome(true);
         const whatsappOk = validateWhatsapp(true);
         const emailOk = validateEmail(true);
+        const consentOk = validateConsent(true);
 
-        if (!nomeOk || !whatsappOk || !emailOk) return;
+        updateLeadButtonState();
+
+        if (!nomeOk || !whatsappOk || !emailOk || !consentOk) return;
 
         btnNextLead.disabled = true;
         btnNextLead.textContent = "CARREGANDO...";
+        btnNextLead.classList.remove("button-enabled-premium");
+        btnNextLead.classList.add("button-disabled-premium");
 
         pushDataLayerEvent("quiz_contact_step_completed", {
           nome: state.lead.nome,
           whatsapp: state.lead.whatsapp,
-          email: state.lead.email
+          email: state.lead.email,
+          consent: state.lead.consent ? "sim" : "nao"
         });
 
-        await sendToAppsScript("lead_form_completed");
+        await sendToAppsScript("lead_form_completed", {
+          consent: state.lead.consent ? "sim" : "nao"
+        });
 
         state.currentStep = "p1";
         render();
       });
 
       renderEmailSuggestions();
+      updateLeadButtonState();
     }
 
     function attachQuestionEvents() {
@@ -1972,6 +2256,14 @@
       return valid;
     }
 
+    function validateConsent(showError = false) {
+      const errorEl = document.getElementById("error-consent");
+      const valid = !!state.lead.consent;
+      const message = "Para continuar, é necessário autorizar o contato pelo WhatsApp.";
+      setErrorState(errorEl, valid, message, showError);
+      return valid;
+    }
+
     function validateCPFField(showError = false) {
       const input = document.getElementById("cpf");
       if (!input) return false;
@@ -2076,6 +2368,98 @@
       } else {
         input.classList.add("invalid");
       }
+    }
+
+    function canAdvanceLeadStep() {
+      return (
+        isLeadNameValidValue(state.lead.nome) &&
+        isLeadWhatsappValidValue(state.lead.whatsapp) &&
+        isLeadEmailValidValue(state.lead.email) &&
+        !!state.lead.consent
+      );
+    }
+
+    function updateLeadButtonState() {
+      const btn = document.getElementById("btnNextLead");
+      if (!btn) return;
+
+      const enabled = canAdvanceLeadStep();
+
+      btn.disabled = !enabled;
+      btn.classList.toggle("button-enabled-premium", enabled);
+      btn.classList.toggle("button-disabled-premium", !enabled);
+    }
+
+    function maybeAdvanceFromWhatsappToEmail() {
+      const emailInput = document.getElementById("email");
+      const normalizedPhone = normalizeBrazilPhoneInput(state.lead.whatsapp);
+
+      if (!isLeadWhatsappValidValue(normalizedPhone)) {
+        whatsappAutoAdvanced = false;
+        return;
+      }
+
+      if (whatsappAutoAdvanced) return;
+      if (!emailInput) return;
+      if (document.activeElement && document.activeElement.id !== "whatsapp") return;
+
+      whatsappAutoAdvanced = true;
+      setTimeout(() => {
+        emailInput.focus();
+        const end = emailInput.value.length;
+        emailInput.setSelectionRange(end, end);
+      }, 80);
+    }
+
+    function isLeadNameValidValue(value) {
+      const normalized = normalizeName(value || "");
+      if (!normalized || normalized.length < 2) return false;
+      if (!/^[A-Za-zÀ-ÿ]+$/.test(normalized)) return false;
+      return hasValidNameStructure(normalized);
+    }
+
+    function isLeadWhatsappValidValue(value) {
+      const clean = normalizeBrazilPhoneInput(value || "");
+      if (!clean) return false;
+      if (clean.length !== 10 && clean.length !== 11) return false;
+
+      const ddd = clean.slice(0, 2);
+      const numero = clean.slice(2);
+
+      if (!DDD_VALIDOS.has(ddd)) return false;
+      if (/^(\d)\1+$/.test(clean)) return false;
+      if (isStrictSequential(clean)) return false;
+      if (clean.length === 11 && numero.charAt(0) !== "9") return false;
+      if (clean.length === 10 && !/^[6-9]/.test(numero.charAt(0))) return false;
+      if (isObviouslyFakePhone(clean)) return false;
+
+      return true;
+    }
+
+    function isLeadEmailValidValue(value) {
+      const normalized = normalizeEmail(value || "");
+      if (!normalized) return false;
+
+      const blockedEmails = new Set([
+        "teste@teste.com",
+        "asd@asd.com",
+        "aaa@aaa.com",
+        "test@test.com",
+        "teste@gmail.com",
+        "email@email.com"
+      ]);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+      if (!emailRegex.test(normalized)) return false;
+      if (blockedEmails.has(normalized)) return false;
+      if (normalized.includes("..")) return false;
+
+      const [localPart = "", domainPart = ""] = normalized.split("@");
+      if (!localPart || !domainPart || !domainPart.includes(".")) return false;
+      if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) return false;
+
+      return true;
     }
 
     function normalizeBrazilPhoneInput(value) {
@@ -2254,7 +2638,6 @@
 
       if (!localPart) return [];
       if (normalized.split("@").length > 2) return [];
-
       if (!typedDomain) return [];
 
       const firstLetter = typedDomain.charAt(0);
@@ -2288,7 +2671,7 @@
         return;
       }
 
-      container.innerHTML = suggestions.map((suggestion, index) => `
+      container.innerHTML = suggestions.map((suggestion) => `
         <button
           type="button"
           class="email-suggestion-item"
@@ -2322,6 +2705,7 @@
 
       validateEmail(false);
       hideEmailSuggestions();
+      updateLeadButtonState();
 
       emailInput.focus();
       const end = emailInput.value.length;
@@ -2404,6 +2788,7 @@
         nome: state.lead.nome || "",
         whatsapp: state.lead.whatsapp || "",
         email: state.lead.email || "",
+        consent: state.lead.consent ? "sim" : "nao",
         p1: state.answers.p1 || "",
         p2: state.answers.p2 || "",
         p3: state.answers.p3 || "",
@@ -2428,6 +2813,7 @@
         nome: state.lead.nome || "",
         whatsapp: state.lead.whatsapp || "",
         email: state.lead.email || "",
+        consent: state.lead.consent ? "sim" : "nao",
         p1: state.answers.p1 || "",
         p2: state.answers.p2 || "",
         p3: state.answers.p3 || "",
