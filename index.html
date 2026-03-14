@@ -47,7 +47,8 @@
       overflow-x: hidden;
     }
 
-    body.modal-open {
+    body.modal-open,
+    body.privacy-open {
       overflow: hidden;
     }
 
@@ -240,17 +241,17 @@
 
     .consent-box {
       margin-top: 10px;
-      padding: 14px 14px 13px;
+      padding: 13px 13px 12px;
       border-radius: 16px;
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.055);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
       transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .consent-box.ready {
-      border-color: rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.026);
     }
 
     .consent-row {
@@ -264,7 +265,7 @@
       flex: 0 0 24px;
       width: 24px;
       height: 24px;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .consent-check input {
@@ -290,7 +291,7 @@
     }
 
     .consent-box.ready .consent-check-ui {
-      border-color: rgba(246,211,0,0.75);
+      border-color: rgba(246,211,0,0.80);
       box-shadow: 0 0 0 3px rgba(246,211,0,0.08), 0 0 16px rgba(246,211,0,0.10);
       animation: consentCheckPulse 1.7s ease-in-out infinite;
     }
@@ -324,25 +325,33 @@
     }
 
     .consent-title {
-      color: #f2f2f2;
-      font-size: 14px;
-      line-height: 1.55;
-      font-weight: 700;
+      color: #ededed;
+      font-size: 12.9px;
+      line-height: 1.48;
+      font-weight: 650;
       margin: 0;
+      letter-spacing: 0.01em;
     }
 
     .consent-note {
-      margin-top: 6px;
+      margin-top: 7px;
       color: #cfcfcf;
       font-size: 13px;
       line-height: 1.55;
     }
 
-    .consent-note a {
+    .consent-note a,
+    .privacy-link-btn {
       color: #fff2a6;
       font-weight: 800;
       text-decoration: underline;
       text-underline-offset: 2px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      cursor: pointer;
     }
 
     .button {
@@ -810,7 +819,8 @@
       animation: fadeSlideUp 0.35s ease both;
     }
 
-    .modal-overlay {
+    .modal-overlay,
+    .privacy-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.75);
@@ -888,6 +898,123 @@
       font-size: 14px;
       line-height: 1.55;
       font-weight: 700;
+    }
+
+    .privacy-panel {
+      width: 100%;
+      max-width: 760px;
+      height: min(92vh, 900px);
+      background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      box-shadow: 0 24px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: modalPop 0.22s ease;
+    }
+
+    .privacy-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      flex: 0 0 auto;
+    }
+
+    .privacy-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .privacy-back-btn,
+    .privacy-close-btn {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      border-radius: 12px;
+      height: 44px;
+      min-width: 44px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 15px;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.14s ease;
+    }
+
+    .privacy-back-btn:hover,
+    .privacy-close-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-1px);
+    }
+
+    .privacy-title {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .privacy-body {
+      flex: 1;
+      min-height: 0;
+      background: #0b0b0b;
+      position: relative;
+    }
+
+    .privacy-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+
+    .privacy-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
+      z-index: 2;
+    }
+
+    .privacy-fallback.show {
+      display: flex;
+    }
+
+    .privacy-fallback-box {
+      width: 100%;
+      max-width: 520px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      padding: 22px 18px;
+    }
+
+    .privacy-fallback-title {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .privacy-fallback-text {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 18px;
     }
 
     @keyframes neutralBreathLoop {
@@ -1019,6 +1146,24 @@
       .fade-in {
         animation: none;
       }
+
+      .privacy-overlay {
+        padding: 0;
+        align-items: stretch;
+        justify-content: stretch;
+      }
+
+      .privacy-panel {
+        max-width: none;
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+      }
+
+      .privacy-header {
+        padding-top: max(14px, env(safe-area-inset-top));
+      }
     }
   </style>
 </head>
@@ -1030,6 +1175,7 @@
   </div>
 
   <div id="modalRoot"></div>
+  <div id="privacyRoot"></div>
 
   <script>
     const CONFIG = {
@@ -1066,7 +1212,8 @@
       finalType: "",
       utms: {},
       origin: "",
-      modalOpen: false
+      modalOpen: false,
+      privacyOpen: false
     };
 
     let whatsappAutoAdvanced = false;
@@ -1094,8 +1241,33 @@
       y: ["yahoo.com", "yahoo.com.br"],
       l: ["live.com"],
       u: ["uol.com.br"],
-      b: ["bol.com.br"]
+      b: ["bol.com.br"],
+      t: ["terra.com.br"],
+      a: ["aol.com"],
+      p: ["proton.me", "protonmail.com"],
+      m: ["mail.com"]
     };
+
+    const TRUSTED_EMAIL_DOMAINS = new Set([
+      "gmail.com",
+      "outlook.com",
+      "hotmail.com",
+      "live.com",
+      "icloud.com",
+      "yahoo.com",
+      "yahoo.com.br",
+      "uol.com.br",
+      "bol.com.br",
+      "terra.com.br",
+      "globo.com",
+      "ig.com.br",
+      "me.com",
+      "msn.com",
+      "aol.com",
+      "proton.me",
+      "protonmail.com",
+      "mail.com"
+    ]);
 
     const QUIZ = {
       p1: {
@@ -1287,6 +1459,7 @@
 
     const app = document.getElementById("app");
     const modalRoot = document.getElementById("modalRoot");
+    const privacyRoot = document.getElementById("privacyRoot");
 
     function render() {
       closeModal(false);
@@ -1420,7 +1593,7 @@
                   </p>
                   <div class="consent-note">
                     Ao marcar, você concorda com nossa
-                    <a href="${escapeHtml(CONFIG.privacyPolicyUrl)}" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.
+                    <button type="button" class="privacy-link-btn" id="btnPrivacyOpen">Política de Privacidade</button>.
                   </div>
                 </div>
               </div>
@@ -1648,6 +1821,13 @@
       const emailInput = document.getElementById("email");
       const consentInput = document.getElementById("consent");
       const btnNextLead = document.getElementById("btnNextLead");
+      const btnPrivacyOpen = document.getElementById("btnPrivacyOpen");
+
+      if (btnPrivacyOpen) {
+        btnPrivacyOpen.addEventListener("click", () => {
+          openPrivacyPanel();
+        });
+      }
 
       nomeInput.addEventListener("input", (e) => {
         handleNameInputFormat(e);
@@ -1656,9 +1836,15 @@
         updateLeadButtonState();
       });
 
+      whatsappInput.dataset.raw = state.lead.whatsapp || "";
+      whatsappInput.dataset.lastFormatted = formatPhone(state.lead.whatsapp || "");
+
+      whatsappInput.addEventListener("keydown", (e) => {
+        handleWhatsAppKeydown(e);
+      });
+
       whatsappInput.addEventListener("input", (e) => {
-        handlePhoneInputMask(e);
-        state.lead.whatsapp = normalizeBrazilPhoneInput(e.target.value);
+        handleWhatsAppInput(e);
         validateWhatsapp(false);
         maybeAdvanceFromWhatsappToEmail();
         updateLeadButtonState();
@@ -2120,6 +2306,120 @@
       }
     }
 
+    function openPrivacyPanel() {
+      state.privacyOpen = true;
+      document.body.classList.add("privacy-open");
+
+      privacyRoot.innerHTML = `
+        <div class="privacy-overlay" id="privacyOverlay">
+          <div class="privacy-panel" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+            <div class="privacy-header">
+              <div class="privacy-header-left">
+                <button type="button" class="privacy-back-btn" id="btnPrivacyBack">← Voltar</button>
+                <div class="privacy-title" id="privacyTitle">Política de Privacidade</div>
+              </div>
+              <button type="button" class="privacy-close-btn" id="btnPrivacyClose">Fechar</button>
+            </div>
+
+            <div class="privacy-body">
+              <iframe
+                id="privacyIframe"
+                class="privacy-iframe"
+                src="${escapeHtml(CONFIG.privacyPolicyUrl)}"
+                title="Política de Privacidade"
+                loading="eager"
+              ></iframe>
+
+              <div class="privacy-fallback" id="privacyFallback">
+                <div class="privacy-fallback-box">
+                  <div class="privacy-fallback-title">Não foi possível carregar a política aqui dentro</div>
+                  <div class="privacy-fallback-text">
+                    Você continua no formulário normalmente. Toque em fechar para voltar exatamente ao ponto em que estava.
+                  </div>
+                  <button type="button" class="button button-outline" id="btnPrivacyFallbackClose">
+                    FECHAR
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const iframe = document.getElementById("privacyIframe");
+      const btnBack = document.getElementById("btnPrivacyBack");
+      const btnClose = document.getElementById("btnPrivacyClose");
+      const fallback = document.getElementById("privacyFallback");
+      const btnFallbackClose = document.getElementById("btnPrivacyFallbackClose");
+      const overlay = document.getElementById("privacyOverlay");
+
+      let iframeLoaded = false;
+
+      const fallbackTimer = setTimeout(() => {
+        if (!iframeLoaded && fallback) {
+          fallback.classList.add("show");
+        }
+      }, 4500);
+
+      if (iframe) {
+        iframe.addEventListener("load", () => {
+          iframeLoaded = true;
+          clearTimeout(fallbackTimer);
+          if (fallback) fallback.classList.remove("show");
+        });
+      }
+
+      if (btnBack) {
+        btnBack.addEventListener("click", () => {
+          try {
+            if (iframe && iframe.contentWindow && iframe.contentWindow.history.length > 1) {
+              iframe.contentWindow.history.back();
+              return;
+            }
+          } catch (error) {
+            // ignore cross-origin access issues
+          }
+
+          closePrivacyPanel();
+        });
+      }
+
+      if (btnClose) {
+        btnClose.addEventListener("click", () => {
+          closePrivacyPanel();
+        });
+      }
+
+      if (btnFallbackClose) {
+        btnFallbackClose.addEventListener("click", () => {
+          closePrivacyPanel();
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) {
+            closePrivacyPanel();
+          }
+        });
+      }
+
+      document.addEventListener("keydown", handleEscapePrivacy);
+    }
+
+    function closePrivacyPanel() {
+      state.privacyOpen = false;
+      document.body.classList.remove("privacy-open");
+      privacyRoot.innerHTML = "";
+      document.removeEventListener("keydown", handleEscapePrivacy);
+    }
+
+    function handleEscapePrivacy(e) {
+      if (e.key === "Escape") {
+        closePrivacyPanel();
+      }
+    }
+
     function buildWhatsAppIconHtml() {
       return `
         <img
@@ -2220,7 +2520,7 @@
       if (!value) {
         valid = false;
         message = "Digite seu WhatsApp.";
-      } else if (value.length !== 10 && value.length !== 11) {
+      } else if (value.length !== 11) {
         valid = false;
         message = "Digite um WhatsApp válido com DDD.";
       } else {
@@ -2236,12 +2536,9 @@
         } else if (isStrictSequential(value)) {
           valid = false;
           message = "Digite um WhatsApp válido.";
-        } else if (value.length === 11 && numero.charAt(0) !== "9") {
+        } else if (numero.charAt(0) !== "9") {
           valid = false;
           message = "Digite um celular válido com 9 após o DDD.";
-        } else if (value.length === 10 && !/^[6-9]/.test(numero.charAt(0))) {
-          valid = false;
-          message = "Digite um WhatsApp válido com DDD.";
         } else if (isObviouslyFakePhone(value)) {
           valid = false;
           message = "Digite um WhatsApp válido.";
@@ -2296,6 +2593,9 @@
           valid = false;
           message = "Digite um e-mail válido.";
         } else if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) {
+          valid = false;
+          message = "Digite um e-mail válido.";
+        } else if (isSuspiciousEmail(normalized)) {
           valid = false;
           message = "Digite um e-mail válido.";
         }
@@ -2510,7 +2810,7 @@
     function isLeadWhatsappValidValue(value) {
       const clean = normalizeBrazilPhoneInput(value || "");
       if (!clean) return false;
-      if (clean.length !== 10 && clean.length !== 11) return false;
+      if (clean.length !== 11) return false;
 
       const ddd = clean.slice(0, 2);
       const numero = clean.slice(2);
@@ -2518,8 +2818,7 @@
       if (!DDD_VALIDOS.has(ddd)) return false;
       if (/^(\d)\1+$/.test(clean)) return false;
       if (isStrictSequential(clean)) return false;
-      if (clean.length === 11 && numero.charAt(0) !== "9") return false;
-      if (clean.length === 10 && !/^[6-9]/.test(numero.charAt(0))) return false;
+      if (numero.charAt(0) !== "9") return false;
       if (isObviouslyFakePhone(clean)) return false;
 
       return true;
@@ -2547,6 +2846,7 @@
       const [localPart = "", domainPart = ""] = normalized.split("@");
       if (!localPart || !domainPart || !domainPart.includes(".")) return false;
       if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) return false;
+      if (isSuspiciousEmail(normalized)) return false;
 
       return true;
     }
@@ -2561,10 +2861,88 @@
       return digits;
     }
 
-    function handlePhoneInputMask(e) {
-      let digits = normalizeBrazilPhoneInput(e.target.value);
+    function handleWhatsAppKeydown(e) {
+      const input = e.target;
+      if (!input || e.key !== "Backspace") return;
+
+      const start = input.selectionStart ?? 0;
+      const end = input.selectionEnd ?? 0;
+
+      if (start !== end) return;
+
+      const formatted = input.value || "";
+      const raw = normalizeBrazilPhoneInput(state.lead.whatsapp || formatted);
+
+      if (!formatted || start <= 0) return;
+
+      const previousChar = formatted.charAt(start - 1);
+
+      if (/\D/.test(previousChar)) {
+        e.preventDefault();
+
+        const digitsBeforeCaret = countDigits(formatted.slice(0, start));
+        const removeIndex = digitsBeforeCaret - 1;
+        if (removeIndex < 0) return;
+
+        const nextRaw = raw.slice(0, removeIndex) + raw.slice(removeIndex + 1);
+        state.lead.whatsapp = nextRaw;
+
+        const nextFormatted = formatPhone(nextRaw);
+        input.value = nextFormatted;
+
+        const nextCaret = getCaretPositionFromDigitIndex(nextFormatted, removeIndex);
+        input.setSelectionRange(nextCaret, nextCaret);
+
+        validateWhatsapp(false);
+        whatsappAutoAdvanced = false;
+        updateLeadButtonState();
+      }
+    }
+
+    function handleWhatsAppInput(e) {
+      const input = e.target;
+      let digits = normalizeBrazilPhoneInput(input.value);
+
       if (digits.length > 11) digits = digits.slice(0, 11);
-      e.target.value = formatPhone(digits);
+
+      state.lead.whatsapp = digits;
+
+      const digitsBeforeCaret = countDigits(input.value.slice(0, input.selectionStart || 0));
+      const formatted = formatPhone(digits);
+
+      input.value = formatted;
+
+      const nextCaret = getCaretPositionFromDigitIndex(formatted, digitsBeforeCaret);
+      input.setSelectionRange(nextCaret, nextCaret);
+
+      if (digits.length < 11) {
+        whatsappAutoAdvanced = false;
+      }
+    }
+
+    function countDigits(value) {
+      return String(value || "").replace(/\D/g, "").length;
+    }
+
+    function getCaretPositionFromDigitIndex(formattedValue, digitIndex) {
+      if (digitIndex <= 0) {
+        const firstDigitPos = String(formattedValue || "").search(/\d/);
+        return firstDigitPos === -1 ? 0 : firstDigitPos;
+      }
+
+      let seen = 0;
+      const text = String(formattedValue || "");
+
+      for (let i = 0; i < text.length; i++) {
+        if (/\d/.test(text.charAt(i))) {
+          seen++;
+          if (seen >= digitIndex) {
+            return i + 1;
+          }
+        }
+      }
+
+      return text.length;
     }
 
     function handleNameInputFormat(e) {
@@ -2657,14 +3035,12 @@
     }
 
     function formatPhone(value) {
-      const digits = onlyDigits(value);
+      const digits = onlyDigits(value).slice(0, 11);
 
       if (!digits) return "";
       if (digits.length <= 2) return `(${digits}`;
-      if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      if (digits.length === 10) {
-        return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6, 10)}`;
-      }
+      if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
       return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
     }
 
@@ -2709,8 +3085,7 @@
     function isObviouslyFakePhone(value) {
       const numero = value.slice(2);
 
-      if (/^(12345678|123456789|98765432|987654321)$/.test(numero)) return true;
-      if (/^(00000000|11111111|22222222|33333333|44444444|55555555|66666666|77777777|88888888|99999999)$/.test(numero)) return true;
+      if (/^(123456789|987654321)$/.test(numero)) return true;
       if (/^(000000000|111111111|222222222|333333333|444444444|555555555|666666666|777777777|888888888|999999999)$/.test(numero)) return true;
 
       return false;
@@ -2806,6 +3181,58 @@
       if (!container) return;
       container.innerHTML = "";
       container.classList.add("hidden");
+    }
+
+    function isSuspiciousEmail(email) {
+      const normalized = normalizeEmail(email);
+      const [localPart = "", domainPart = ""] = normalized.split("@");
+      if (!localPart || !domainPart) return true;
+
+      if (TRUSTED_EMAIL_DOMAINS.has(domainPart)) {
+        return false;
+      }
+
+      const localClean = localPart.replace(/[.\-_]/g, "");
+      const domainLabels = domainPart.split(".");
+      const rootDomain = domainLabels.length >= 2 ? domainLabels[domainLabels.length - 2] : domainPart;
+      const tld = domainLabels[domainLabels.length - 1] || "";
+
+      if (tld.length < 2) return true;
+      if (/^\d+$/.test(rootDomain)) return true;
+      if (/^(.)\1+$/.test(rootDomain)) return true;
+
+      const localLooksRandom = looksRandomToken(localClean);
+      const rootLooksRandom = looksRandomToken(rootDomain);
+
+      if (localClean.length <= 3 && rootDomain.length <= 5 && !TRUSTED_EMAIL_DOMAINS.has(domainPart)) {
+        return true;
+      }
+
+      if (localLooksRandom && rootLooksRandom) {
+        return true;
+      }
+
+      if (!/[aeiou]/i.test(rootDomain) && rootDomain.length <= 6) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function looksRandomToken(token) {
+      const clean = String(token || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (!clean) return true;
+      if (clean.length < 3) return true;
+      if (/^\d+$/.test(clean)) return true;
+      if (/^(.)\1+$/.test(clean)) return true;
+
+      const vowels = (clean.match(/[aeiou]/g) || []).length;
+      const uniqueChars = new Set(clean.split("")).size;
+
+      if (clean.length <= 6 && vowels <= 1 && uniqueChars >= 3) return true;
+      if (/^[bcdfghjklmnpqrstvwxyz]{5,}$/i.test(clean)) return true;
+
+      return false;
     }
 
     function captureUTMs() {
