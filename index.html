@@ -1770,16 +1770,18 @@
       if (state.answers.p2) lines.push(`*Canal excl.:* ${state.answers.p2}`);
       if (state.answers.p3) lines.push(`*Já teve Pag:* ${state.answers.p3}`);
       if (state.answers.p4) lines.push(`*Tem CPF/CNPJ apto:* ${state.answers.p4}`);
-      if (state.answers.p5) lines.push(`*Fat.:* ${state.answers.p5}`);
-      if (state.answers.p6) lines.push(`*Qnd pret. comp.:* ${state.answers.p6}`);
-      if (state.answers.p7) lines.push(`*Valor disp.:* ${state.answers.p7}`);
       if (state.answers.p4 === "Sim") {
-        lines.push("");
-        lines.push(`*Outro titular informado:* Sim`);
-        if (state.newHolder.cpf) lines.push(`*CPF novo titular:* ${formatCPF(state.newHolder.cpf)}`);
-        if (state.newHolder.hasCnpj === "Sim" && state.newHolder.cnpj) lines.push(`*CNPJ novo titular:* ${formatCNPJ(state.newHolder.cnpj)}`);
-        if (state.newHolder.hasCnpj === "Não") lines.push(`*CNPJ novo titular:* Não possui`);
-      }
+  if (state.newHolder.cpf) lines.push(`*CPF novo titular:* ${formatCPF(state.newHolder.cpf)}`);
+  if (state.newHolder.hasCnpj === "Sim" && state.newHolder.cnpj) {
+    lines.push(`*CNPJ novo titular:* ${formatCNPJ(state.newHolder.cnpj)}`);
+  } else if (state.newHolder.hasCnpj === "Não") {
+    lines.push(`*CNPJ novo titular:* Não possui`);
+  }
+}
+
+if (state.answers.p5) lines.push(`*Fat.:* ${state.answers.p5}`);
+if (state.answers.p6) lines.push(`*Qnd pret. comp.:* ${state.answers.p6}`);
+if (state.answers.p7) lines.push(`*Valor disp.:* ${state.answers.p7}`);
       if (type === "disqualified") {
         lines.push("");
         if (state.alternate.cpf) lines.push(`*CPF:* ${formatCPF(state.alternate.cpf)}`);
