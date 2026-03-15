@@ -1084,6 +1084,7 @@
     const state = {
       lead: { nome: "", whatsapp: "", email: "", consent: false },
       answers: { p1: "", p2: "", p3: "", p4: "", p5: "", p6: "", p7: "" },
+      newHolder: { cpf: "", hasCnpj: "", cnpj: "" },
       alternate: { cpf: "", hasCnpj: "", cnpj: "" },
       currentStep: "lead",
       finalType: "",
@@ -1095,34 +1096,13 @@
 
     let whatsappAutoAdvanced = false;
 
-    const DDD_VALIDOS = new Set([
-      "11","12","13","14","15","16","17","18","19",
-      "21","22","24","27","28","31","32","33","34","35","37","38",
-      "41","42","43","44","45","46","47","48","49","51","53","54","55",
-      "61","62","63","64","65","66","67","68","69","71","73","74","75","77","79",
-      "81","82","83","84","85","86","87","88","89","91","92","93","94","95","96","97","98","99"
-    ]);
+    const DDD_VALIDOS = new Set(["11","12","13","14","15","16","17","18","19","21","22","24","27","28","31","32","33","34","35","37","38","41","42","43","44","45","46","47","48","49","51","53","54","55","61","62","63","64","65","66","67","68","69","71","73","74","75","77","79","81","82","83","84","85","86","87","88","89","91","92","93","94","95","96","97","98","99"]);
 
     const EMAIL_DOMAIN_GROUPS = {
-      g: ["gmail.com"],
-      o: ["outlook.com"],
-      h: ["hotmail.com"],
-      i: ["icloud.com"],
-      y: ["yahoo.com", "yahoo.com.br"],
-      l: ["live.com"],
-      u: ["uol.com.br"],
-      b: ["bol.com.br"],
-      t: ["terra.com.br"],
-      a: ["aol.com"],
-      p: ["proton.me", "protonmail.com"],
-      m: ["mail.com"]
+      g: ["gmail.com"], o: ["outlook.com"], h: ["hotmail.com"], i: ["icloud.com"], y: ["yahoo.com", "yahoo.com.br"], l: ["live.com"], u: ["uol.com.br"], b: ["bol.com.br"], t: ["terra.com.br"], a: ["aol.com"], p: ["proton.me", "protonmail.com"], m: ["mail.com"]
     };
 
-    const TRUSTED_EMAIL_DOMAINS = new Set([
-      "gmail.com","outlook.com","hotmail.com","live.com","icloud.com","yahoo.com","yahoo.com.br",
-      "uol.com.br","bol.com.br","terra.com.br","globo.com","ig.com.br","me.com","msn.com",
-      "aol.com","proton.me","protonmail.com","mail.com"
-    ]);
+    const TRUSTED_EMAIL_DOMAINS = new Set(["gmail.com","outlook.com","hotmail.com","live.com","icloud.com","yahoo.com","yahoo.com.br","uol.com.br","bol.com.br","terra.com.br","globo.com","ig.com.br","me.com","msn.com","aol.com","proton.me","protonmail.com","mail.com"]);
 
     const QUIZ = {
       p1: {
@@ -1151,7 +1131,7 @@
       p4: {
         title: "Você tem algum CPF ou CNPJ que nunca teve maquininha PagBank ou está sem uso há mais de 6 meses para aproveitar essa oferta?",
         options: [
-          { label: "✅ Sim", short: "Sim", whatsappLabel: "Sim", next: "p5" },
+          { label: "✅ Sim", short: "Sim", whatsappLabel: "Sim", next: "p4b" },
           { label: "❌ Não", short: "Não", whatsappLabel: "Não", next: "d1" }
         ]
       },
@@ -1200,6 +1180,7 @@
     function renderStepContent() {
       if (state.currentStep === "lead") return renderLeadFormMarkup();
       if (QUIZ[state.currentStep]) return renderQuestionMarkup(state.currentStep);
+      if (state.currentStep === "p4b") return renderNewHolderValidationMarkup();
       if (state.currentStep === "e1") return renderQualifiedMarkup();
       if (state.currentStep === "d1") return renderDisqualifiedMarkup();
       if (state.currentStep === "d2") return renderAlternativeProposalMarkup();
@@ -1210,6 +1191,7 @@
     function attachCurrentStepEvents() {
       if (state.currentStep === "lead") return attachLeadFormEvents();
       if (QUIZ[state.currentStep]) return attachQuestionEvents();
+      if (state.currentStep === "p4b") return attachNewHolderValidationEvents();
       if (state.currentStep === "e1") return attachQualifiedEvents();
       if (state.currentStep === "d1") return attachDisqualifiedEvents();
       if (state.currentStep === "d2") return attachAlternativeProposalEvents();
@@ -1217,7 +1199,7 @@
     }
 
     function buildProgressBar() {
-      const progressMap = { lead: 12, p1: 45, p2: 58, p3: 58, p4: 68, p5: 78, p6: 87, p7: 94, e1: 100, d1: 100, d2: 100, e3: 100 };
+      const progressMap = { lead: 12, p1: 45, p2: 58, p3: 58, p4: 68, p4b: 74, p5: 82, p6: 90, p7: 96, e1: 100, d1: 100, d2: 100, e3: 100 };
       const percent = progressMap[state.currentStep] || 12;
       return `<div class="progress-wrap"><div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width:${percent}%"></div></div></div>`;
     }
@@ -1284,6 +1266,62 @@
       `;
     }
 
+    function renderNewHolderValidationMarkup() {
+      const firstName = getFirstName(state.lead.nome);
+      const cpfDigits = state.newHolder.cpf || "";
+      const cpfValid = cpfDigits.length === 11 && isAcceptableCPF(cpfDigits);
+      const hasCnpj = state.newHolder.hasCnpj;
+      const cnpjVisible = cpfValid && hasCnpj === "Sim";
+      const cnpjValue = state.newHolder.cnpj || "";
+      const cnpjValid = cnpjValue.length === 14 && isAcceptableCNPJGeneral(cnpjValue);
+      const canContinue = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
+
+      return `
+        <div>
+          <h2>Maravilha, ${escapeHtml(firstName)}! Que bom que você possui esse outro documento para pedir.</h2>
+          <div class="subtitle">Pra gente prosseguir com a nova proposta, preciso de alguns dados importantes desse novo titular para a análise:</div>
+          <div class="info-box">
+            <form id="formNewHolderValidation" novalidate>
+              <div class="field">
+                <label for="newHolderCpf">Primeiro me envie o CPF do novo titular <span class="required">*</span> 👇</label>
+                <input type="tel" id="newHolderCpf" name="newHolderCpf" placeholder="000.000.000-00" inputmode="numeric" autocomplete="off" value="${escapeHtml(formatCPF(state.newHolder.cpf))}" />
+                <div class="error" id="error-new-holder-cpf"></div>
+                <div class="trust-box">
+                  <div class="trust-icon">🔒</div>
+                  <div class="trust-content">
+                    <div class="trust-title">Os dados do novo titular serão usados somente para análise da proposta.</div>
+                    <p class="trust-text">Informar CPF ou CNPJ aqui não gera cadastro, contratação automática nem qualquer cobrança.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="newHolderHasCnpjBlock" class="${cpfValid ? "" : "hidden"} fade-in">
+                <label>Esse novo titular possui CNPJ?</label>
+                <div class="choice-inline">
+                  <button type="button" class="toggle-btn ${hasCnpj === "Sim" ? "active" : ""}" data-new-holder-cnpj="Sim">Sim</button>
+                  <button type="button" class="toggle-btn ${hasCnpj === "Não" ? "active" : ""}" data-new-holder-cnpj="Não">Não</button>
+                </div>
+                <div class="section-intro-note">Isso ajuda a verificar opções compatíveis com o perfil do novo titular, sem mudar a análise principal.</div>
+              </div>
+
+              <div id="newHolderCnpjFieldWrap" class="${cnpjVisible ? "" : "hidden"} fade-in" style="margin-top:18px;">
+                <div class="field">
+                  <label for="newHolderCnpj">Maravilha, ${escapeHtml(firstName)}! Me envie também o CNPJ do novo titular <span class="required">*</span> 👇</label>
+                  <input type="text" id="newHolderCnpj" name="newHolderCnpj" placeholder="SS.SSS.SSS/SSSS-NN" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${escapeHtml(formatCNPJ(state.newHolder.cnpj))}" />
+                  <div class="error" id="error-new-holder-cnpj"></div>
+                </div>
+              </div>
+
+              <div id="newHolderFinalCtaBox" class="final-cta-box fade-in ${canContinue ? "" : "hidden"}">
+                <div class="inline-success">Tudo certo, ${escapeHtml(firstName)}! Agora vamos continuar a análise da proposta.</div>
+                <button type="submit" class="button button-lead-active" id="btnContinueNewHolder"><span>CONTINUAR ANÁLISE →</span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
     function renderQualifiedMarkup() {
       const firstName = getFirstName(state.lead.nome);
       return `
@@ -1319,13 +1357,11 @@
     function renderAlternativeProposalMarkup() {
       const firstName = getFirstName(state.lead.nome);
       const cpfDigits = state.alternate.cpf || "";
-      const cpfCompleted = cpfDigits.length === 11;
-      const cpfValid = cpfCompleted && isAcceptableCPF(cpfDigits);
+      const cpfValid = cpfDigits.length === 11 && isAcceptableCPF(cpfDigits);
       const hasCnpj = state.alternate.hasCnpj;
       const cnpjVisible = cpfValid && hasCnpj === "Sim";
       const cnpjValue = state.alternate.cnpj || "";
-      const cnpjCompleted = cnpjValue.length === 14;
-      const cnpjValid = cnpjCompleted && isAcceptableCNPJGeneral(cnpjValue);
+      const cnpjValid = cnpjValue.length === 14 && isAcceptableCNPJGeneral(cnpjValue);
       const canSubmit = cpfValid && (hasCnpj === "Não" || (hasCnpj === "Sim" && cnpjValid));
 
       return `
@@ -1399,60 +1435,17 @@
 
       if (btnPrivacyOpen) btnPrivacyOpen.addEventListener("click", openPrivacyPanel);
 
-      nomeInput.addEventListener("input", (e) => {
-        handleNameInputFormat(e);
-        state.lead.nome = normalizeName(e.target.value);
-        validateNome(false);
-        updateLeadButtonState();
-      });
-
+      nomeInput.addEventListener("input", (e) => { handleNameInputFormat(e); state.lead.nome = normalizeName(e.target.value); validateNome(false); updateLeadButtonState(); });
       whatsappInput.addEventListener("keydown", handleWhatsAppKeydown);
-      whatsappInput.addEventListener("input", (e) => {
-        handleWhatsAppInput(e);
-        validateWhatsapp(false);
-        maybeAdvanceFromWhatsappToEmail();
-        updateLeadButtonState();
-      });
-
+      whatsappInput.addEventListener("input", (e) => { handleWhatsAppInput(e); validateWhatsapp(false); maybeAdvanceFromWhatsappToEmail(); updateLeadButtonState(); });
       emailInput.addEventListener("keydown", (e) => { if (e.key === " ") e.preventDefault(); });
-      emailInput.addEventListener("input", (e) => {
-        const normalizedEmail = normalizeEmail(e.target.value);
-        e.target.value = normalizedEmail;
-        state.lead.email = normalizedEmail;
-        validateEmail(false);
-        renderEmailSuggestions();
-        updateLeadButtonState();
-      });
+      emailInput.addEventListener("input", (e) => { const normalizedEmail = normalizeEmail(e.target.value); e.target.value = normalizedEmail; state.lead.email = normalizedEmail; validateEmail(false); renderEmailSuggestions(); updateLeadButtonState(); });
       emailInput.addEventListener("focus", renderEmailSuggestions);
-      emailInput.addEventListener("blur", () => {
-        const normalizedEmail = normalizeEmail(emailInput.value);
-        emailInput.value = normalizedEmail;
-        state.lead.email = normalizedEmail;
-        validateEmail(true);
-        updateLeadButtonState();
-        setTimeout(hideEmailSuggestions, 120);
-      });
+      emailInput.addEventListener("blur", () => { const normalizedEmail = normalizeEmail(emailInput.value); emailInput.value = normalizedEmail; state.lead.email = normalizedEmail; validateEmail(true); updateLeadButtonState(); setTimeout(hideEmailSuggestions, 120); });
+      nomeInput.addEventListener("blur", () => { validateNome(true); updateLeadButtonState(); });
+      whatsappInput.addEventListener("blur", () => { const digits = normalizeBrazilPhoneInput(whatsappInput.value); state.lead.whatsapp = digits; whatsappInput.value = formatPhone(digits); validateWhatsapp(true); updateLeadButtonState(); });
 
-      nomeInput.addEventListener("blur", () => {
-        validateNome(true);
-        updateLeadButtonState();
-      });
-
-      whatsappInput.addEventListener("blur", () => {
-        const digits = normalizeBrazilPhoneInput(whatsappInput.value);
-        state.lead.whatsapp = digits;
-        whatsappInput.value = formatPhone(digits);
-        validateWhatsapp(true);
-        updateLeadButtonState();
-      });
-
-      if (consentInput) {
-        consentInput.addEventListener("change", () => {
-          state.lead.consent = !!consentInput.checked;
-          validateConsent(false);
-          updateLeadButtonState();
-        });
-      }
+      if (consentInput) consentInput.addEventListener("change", () => { state.lead.consent = !!consentInput.checked; validateConsent(false); updateLeadButtonState(); });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1460,30 +1453,19 @@
         state.lead.whatsapp = normalizeBrazilPhoneInput(whatsappInput.value);
         state.lead.email = normalizeEmail(emailInput.value);
         state.lead.consent = !!(consentInput && consentInput.checked);
-
         nomeInput.value = state.lead.nome;
         whatsappInput.value = formatPhone(state.lead.whatsapp);
         emailInput.value = state.lead.email;
-
         const nomeOk = validateNome(true);
         const whatsappOk = validateWhatsapp(true);
         const emailOk = validateEmail(true);
         const consentOk = validateConsent(true);
-
         updateLeadButtonState();
         if (!nomeOk || !whatsappOk || !emailOk || !consentOk) return;
-
         btnNextLead.disabled = true;
         btnNextLead.className = "button button-lead-disabled";
         btnNextLead.innerHTML = `<span class="button-content">CARREGANDO...</span>`;
-
-        pushDataLayerEvent("quiz_contact_step_completed", {
-          nome: state.lead.nome,
-          whatsapp: state.lead.whatsapp,
-          email: state.lead.email,
-          consent: state.lead.consent ? "sim" : "nao"
-        });
-
+        pushDataLayerEvent("quiz_contact_step_completed", { nome: state.lead.nome, whatsapp: state.lead.whatsapp, email: state.lead.email, consent: state.lead.consent ? "sim" : "nao" });
         await sendToAppsScript("lead_form_completed", { consent: state.lead.consent ? "sim" : "nao" });
         state.currentStep = "p1";
         render();
@@ -1498,18 +1480,14 @@
         btn.addEventListener("click", async () => {
           if (btn.dataset.locked === "1") return;
           btn.dataset.locked = "1";
-
           const step = btn.getAttribute("data-step");
           const index = Number(btn.getAttribute("data-index"));
           const selected = QUIZ[step].options[index];
-
           document.querySelectorAll(".answer-btn").forEach((item) => { item.style.pointerEvents = "none"; });
           btn.classList.add("selected", "confirming");
           state.answers[step] = selected.whatsappLabel;
-
           pushDataLayerEvent("quiz_answer", { step, answer: selected.short, next_step: selected.next });
           await sendToAppsScript("quiz_answer", { answered_step: step, answered_value: selected.short, next_step: selected.next });
-
           setTimeout(() => {
             state.currentStep = selected.next;
             if (selected.next === "e1") state.finalType = "qualified";
@@ -1519,6 +1497,61 @@
           }, 700);
         });
       });
+    }
+
+    function attachNewHolderValidationEvents() {
+      const form = document.getElementById("formNewHolderValidation");
+      const cpfInput = document.getElementById("newHolderCpf");
+      const cnpjInput = document.getElementById("newHolderCnpj");
+
+      if (cpfInput) {
+        cpfInput.addEventListener("input", (e) => { const digits = onlyDigits(e.target.value).slice(0, 11); state.newHolder.cpf = digits; e.target.value = formatCPF(digits); validateNewHolderCPFField(false); syncNewHolderUI(); });
+        cpfInput.addEventListener("blur", () => { cpfInput.value = formatCPF(state.newHolder.cpf); validateNewHolderCPFField(true); syncNewHolderUI(); });
+      }
+
+      document.querySelectorAll("[data-new-holder-cnpj]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.newHolder.hasCnpj = btn.getAttribute("data-new-holder-cnpj");
+          if (state.newHolder.hasCnpj === "Não") {
+            state.newHolder.cnpj = "";
+            const cnpj = document.getElementById("newHolderCnpj");
+            if (cnpj) { cnpj.value = ""; cnpj.classList.remove("valid", "invalid"); }
+            const errorCnpj = document.getElementById("error-new-holder-cnpj");
+            if (errorCnpj) { errorCnpj.textContent = ""; errorCnpj.classList.remove("show"); }
+          }
+          pushDataLayerEvent("quiz_new_holder_has_cnpj_selected", { has_cnpj: state.newHolder.hasCnpj });
+          syncNewHolderUI();
+          if (state.newHolder.hasCnpj === "Sim") {
+            setTimeout(() => {
+              const cnpjField = document.getElementById("newHolderCnpj");
+              if (cnpjField) { cnpjField.focus(); const valueLength = cnpjField.value.length; cnpjField.setSelectionRange(valueLength, valueLength); }
+            }, 120);
+          }
+        });
+      });
+
+      if (cnpjInput) {
+        cnpjInput.addEventListener("input", (e) => { const normalized = normalizeCNPJInput(e.target.value); state.newHolder.cnpj = normalized; e.target.value = formatCNPJ(normalized); validateNewHolderCNPJField(false); syncNewHolderUI(); });
+        cnpjInput.addEventListener("blur", () => { const normalized = normalizeCNPJInput(cnpjInput.value); state.newHolder.cnpj = normalized; cnpjInput.value = formatCNPJ(normalized); validateNewHolderCNPJField(true); syncNewHolderUI(); });
+      }
+
+      if (form) {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const cpfOk = validateNewHolderCPFField(true);
+          if (!cpfOk) { cpfInput && cpfInput.focus(); syncNewHolderUI(); return; }
+          if (!state.newHolder.hasCnpj) { syncNewHolderUI(); return; }
+          if (state.newHolder.hasCnpj === "Sim") {
+            const cnpjOk = validateNewHolderCNPJField(true);
+            if (!cnpjOk) { cnpjInput && cnpjInput.focus(); syncNewHolderUI(); return; }
+          }
+          pushDataLayerEvent("quiz_new_holder_completed", { has_cnpj: state.newHolder.hasCnpj || "", cpf: state.newHolder.cpf || "", cnpj: state.newHolder.hasCnpj === "Sim" ? state.newHolder.cnpj || "" : "" });
+          await sendToAppsScript("quiz_new_holder_completed", { has_cnpj: state.newHolder.hasCnpj || "", cpf: state.newHolder.cpf || "", cnpj: state.newHolder.hasCnpj === "Sim" ? state.newHolder.cnpj || "" : "" });
+          state.currentStep = "p5";
+          render();
+        });
+        syncNewHolderUI();
+      }
     }
 
     function attachQualifiedEvents() {
@@ -1534,16 +1567,7 @@
     function attachDisqualifiedEvents() {
       const btnOther = document.getElementById("btnOtherProposalsStart");
       const btnClose = document.getElementById("btnCloseDisqualified");
-
-      if (btnOther) {
-        btnOther.addEventListener("click", async () => {
-          pushDataLayerEvent("quiz_disqualified_interest_recovered", { source_step: "d1" });
-          await sendToAppsScript("quiz_disqualified_other_proposals", { source_step: "d1" });
-          state.currentStep = "d2";
-          render();
-        });
-      }
-
+      if (btnOther) btnOther.addEventListener("click", async () => { pushDataLayerEvent("quiz_disqualified_interest_recovered", { source_step: "d1" }); await sendToAppsScript("quiz_disqualified_other_proposals", { source_step: "d1" }); state.currentStep = "d2"; render(); });
       if (btnClose) btnClose.addEventListener("click", openRecoveryModal);
     }
 
@@ -1551,98 +1575,46 @@
       const form = document.getElementById("formAlternativeProposal");
       const cpfInput = document.getElementById("cpf");
       const cnpjInput = document.getElementById("cnpj");
-
       if (cpfInput) {
-        cpfInput.addEventListener("input", (e) => {
-          const digits = onlyDigits(e.target.value).slice(0, 11);
-          state.alternate.cpf = digits;
-          e.target.value = formatCPF(digits);
-          validateCPFField(false);
-          syncAlternativeProposalUI();
-        });
-        cpfInput.addEventListener("blur", () => {
-          cpfInput.value = formatCPF(state.alternate.cpf);
-          validateCPFField(true);
-          syncAlternativeProposalUI();
-        });
+        cpfInput.addEventListener("input", (e) => { const digits = onlyDigits(e.target.value).slice(0, 11); state.alternate.cpf = digits; e.target.value = formatCPF(digits); validateCPFField(false); syncAlternativeProposalUI(); });
+        cpfInput.addEventListener("blur", () => { cpfInput.value = formatCPF(state.alternate.cpf); validateCPFField(true); syncAlternativeProposalUI(); });
       }
-
       document.querySelectorAll("[data-has-cnpj]").forEach((btn) => {
         btn.addEventListener("click", () => {
           state.alternate.hasCnpj = btn.getAttribute("data-has-cnpj");
           if (state.alternate.hasCnpj === "Não") {
             state.alternate.cnpj = "";
             const cnpj = document.getElementById("cnpj");
-            if (cnpj) {
-              cnpj.value = "";
-              cnpj.classList.remove("valid", "invalid");
-            }
+            if (cnpj) { cnpj.value = ""; cnpj.classList.remove("valid", "invalid"); }
             const errorCnpj = document.getElementById("error-cnpj");
-            if (errorCnpj) {
-              errorCnpj.textContent = "";
-              errorCnpj.classList.remove("show");
-            }
+            if (errorCnpj) { errorCnpj.textContent = ""; errorCnpj.classList.remove("show"); }
           }
           pushDataLayerEvent("quiz_alternate_has_cnpj_selected", { has_cnpj: state.alternate.hasCnpj });
           syncAlternativeProposalUI();
           if (state.alternate.hasCnpj === "Sim") {
             setTimeout(() => {
               const cnpjField = document.getElementById("cnpj");
-              if (cnpjField) {
-                cnpjField.focus();
-                const valueLength = cnpjField.value.length;
-                cnpjField.setSelectionRange(valueLength, valueLength);
-              }
+              if (cnpjField) { cnpjField.focus(); const valueLength = cnpjField.value.length; cnpjField.setSelectionRange(valueLength, valueLength); }
             }, 120);
           }
         });
       });
-
       if (cnpjInput) {
-        cnpjInput.addEventListener("input", (e) => {
-          const normalized = normalizeCNPJInput(e.target.value);
-          state.alternate.cnpj = normalized;
-          e.target.value = formatCNPJ(normalized);
-          validateCNPJField(false);
-          syncAlternativeProposalUI();
-        });
-        cnpjInput.addEventListener("blur", () => {
-          const normalized = normalizeCNPJInput(cnpjInput.value);
-          state.alternate.cnpj = normalized;
-          cnpjInput.value = formatCNPJ(normalized);
-          validateCNPJField(true);
-          syncAlternativeProposalUI();
-        });
+        cnpjInput.addEventListener("input", (e) => { const normalized = normalizeCNPJInput(e.target.value); state.alternate.cnpj = normalized; e.target.value = formatCNPJ(normalized); validateCNPJField(false); syncAlternativeProposalUI(); });
+        cnpjInput.addEventListener("blur", () => { const normalized = normalizeCNPJInput(cnpjInput.value); state.alternate.cnpj = normalized; cnpjInput.value = formatCNPJ(normalized); validateCNPJField(true); syncAlternativeProposalUI(); });
       }
-
       if (form) {
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
           const cpfOk = validateCPFField(true);
-          if (!cpfOk) {
-            cpfInput && cpfInput.focus();
-            syncAlternativeProposalUI();
-            return;
-          }
-          if (!state.alternate.hasCnpj) {
-            syncAlternativeProposalUI();
-            return;
-          }
+          if (!cpfOk) { cpfInput && cpfInput.focus(); syncAlternativeProposalUI(); return; }
+          if (!state.alternate.hasCnpj) { syncAlternativeProposalUI(); return; }
           if (state.alternate.hasCnpj === "Sim") {
             const cnpjOk = validateCNPJField(true);
-            if (!cnpjOk) {
-              cnpjInput && cnpjInput.focus();
-              syncAlternativeProposalUI();
-              return;
-            }
+            if (!cnpjOk) { cnpjInput && cnpjInput.focus(); syncAlternativeProposalUI(); return; }
           }
-
           pushDataLayerEvent("quiz_whatsapp_click", { destination: "disqualified_alternative", final_type: "disqualified_alternative" });
-          await sendToAppsScript("quiz_finished", {
-            final_type: "disqualified_alternative",
-            cpf: state.alternate.cpf || "",
-            cnpj: state.alternate.hasCnpj === "Sim" ? state.alternate.cnpj || "" : ""
-          });
+          await sendToAppsScript("quiz_finished", { final_type: "disqualified_alternative", cpf: state.alternate.cpf || "", cnpj: state.alternate.hasCnpj === "Sim" ? state.alternate.cnpj || "" : "" });
           openWhatsApp("disqualified");
         });
         syncAlternativeProposalUI();
@@ -1652,51 +1624,48 @@
     function attachClosedFlowEvents() {
       const btn = document.getElementById("btnCloseFlow");
       if (!btn) return;
-      btn.addEventListener("click", async () => {
-        pushDataLayerEvent("quiz_closed_flow", { final_type: "closed", origin_detected: state.origin || "" });
-        await sendToAppsScript("quiz_finished", { final_type: "closed" });
-        exitSiteByOrigin();
-      });
+      btn.addEventListener("click", async () => { pushDataLayerEvent("quiz_closed_flow", { final_type: "closed", origin_detected: state.origin || "" }); await sendToAppsScript("quiz_finished", { final_type: "closed" }); exitSiteByOrigin(); });
+    }
+
+    function syncNewHolderUI() {
+      if (state.currentStep !== "p4b") return;
+      const cpfDigits = state.newHolder.cpf || "";
+      const cpfValid = cpfDigits.length === 11 && isAcceptableCPF(cpfDigits);
+      const hasCnpjBlock = document.getElementById("newHolderHasCnpjBlock");
+      const cnpjFieldWrap = document.getElementById("newHolderCnpjFieldWrap");
+      const finalCtaBox = document.getElementById("newHolderFinalCtaBox");
+      if (!cpfValid) { state.newHolder.hasCnpj = ""; state.newHolder.cnpj = ""; }
+      if (hasCnpjBlock) hasCnpjBlock.classList.toggle("hidden", !cpfValid);
+      document.querySelectorAll("[data-new-holder-cnpj]").forEach((btn) => { const value = btn.getAttribute("data-new-holder-cnpj"); btn.classList.toggle("active", value === state.newHolder.hasCnpj); });
+      const shouldShowCnpj = cpfValid && state.newHolder.hasCnpj === "Sim";
+      if (cnpjFieldWrap) cnpjFieldWrap.classList.toggle("hidden", !shouldShowCnpj);
+      const cnpjValue = state.newHolder.cnpj || "";
+      const canContinue = cpfValid && (state.newHolder.hasCnpj === "Não" || (state.newHolder.hasCnpj === "Sim" && cnpjValue.length === 14 && isAcceptableCNPJGeneral(cnpjValue)));
+      if (finalCtaBox) finalCtaBox.classList.toggle("hidden", !canContinue);
+      if (!shouldShowCnpj) {
+        const cnpjInput = document.getElementById("newHolderCnpj");
+        if (cnpjInput && state.newHolder.hasCnpj !== "Sim") { cnpjInput.value = ""; cnpjInput.classList.remove("valid", "invalid"); }
+      }
     }
 
     function syncAlternativeProposalUI() {
       if (state.currentStep !== "d2") return;
-
       const cpfDigits = state.alternate.cpf || "";
-      const cpfCompleted = cpfDigits.length === 11;
-      const cpfValid = cpfCompleted && isAcceptableCPF(cpfDigits);
-
+      const cpfValid = cpfDigits.length === 11 && isAcceptableCPF(cpfDigits);
       const hasCnpjBlock = document.getElementById("hasCnpjBlock");
       const cnpjFieldWrap = document.getElementById("cnpjFieldWrap");
       const finalCtaBox = document.getElementById("finalCtaBox");
-
-      if (!cpfValid) {
-        state.alternate.hasCnpj = "";
-        state.alternate.cnpj = "";
-      }
-
+      if (!cpfValid) { state.alternate.hasCnpj = ""; state.alternate.cnpj = ""; }
       if (hasCnpjBlock) hasCnpjBlock.classList.toggle("hidden", !cpfValid);
-
-      document.querySelectorAll("[data-has-cnpj]").forEach((btn) => {
-        const value = btn.getAttribute("data-has-cnpj");
-        btn.classList.toggle("active", value === state.alternate.hasCnpj);
-      });
-
+      document.querySelectorAll("[data-has-cnpj]").forEach((btn) => { const value = btn.getAttribute("data-has-cnpj"); btn.classList.toggle("active", value === state.alternate.hasCnpj); });
       const shouldShowCnpj = cpfValid && state.alternate.hasCnpj === "Sim";
       if (cnpjFieldWrap) cnpjFieldWrap.classList.toggle("hidden", !shouldShowCnpj);
-
       const cnpjValue = state.alternate.cnpj || "";
-      const cnpjCompleted = cnpjValue.length === 14;
-      const canSubmit = cpfValid && (state.alternate.hasCnpj === "Não" || (state.alternate.hasCnpj === "Sim" && cnpjCompleted && isAcceptableCNPJGeneral(cnpjValue)));
-
+      const canSubmit = cpfValid && (state.alternate.hasCnpj === "Não" || (state.alternate.hasCnpj === "Sim" && cnpjValue.length === 14 && isAcceptableCNPJGeneral(cnpjValue)));
       if (finalCtaBox) finalCtaBox.classList.toggle("hidden", !canSubmit);
-
       if (!shouldShowCnpj) {
         const cnpjInput = document.getElementById("cnpj");
-        if (cnpjInput && state.alternate.hasCnpj !== "Sim") {
-          cnpjInput.value = "";
-          cnpjInput.classList.remove("valid", "invalid");
-        }
+        if (cnpjInput && state.alternate.hasCnpj !== "Sim") { cnpjInput.value = ""; cnpjInput.classList.remove("valid", "invalid"); }
       }
     }
 
@@ -1704,7 +1673,6 @@
       state.modalOpen = true;
       document.body.classList.add("modal-open");
       const firstName = getFirstName(state.lead.nome);
-
       modalRoot.innerHTML = `
         <div class="modal-overlay" id="modalOverlay">
           <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -1724,48 +1692,27 @@
           </div>
         </div>
       `;
-
       const overlay = document.getElementById("modalOverlay");
       const btnRecover = document.getElementById("btnModalRecover");
       const btnClose = document.getElementById("btnModalClose");
-
       if (overlay) overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(true); });
-      if (btnRecover) {
-        btnRecover.addEventListener("click", async () => {
-          pushDataLayerEvent("quiz_recovery_modal_accept", { source_step: "d1" });
-          await sendToAppsScript("quiz_recovery_modal_accept", { source_step: "d1" });
-          closeModal(false);
-          state.currentStep = "d2";
-          render();
-        });
-      }
-      if (btnClose) {
-        btnClose.addEventListener("click", async () => {
-          pushDataLayerEvent("quiz_closed_flow", { final_type: "disqualified_closed", origin_detected: state.origin || "" });
-          await sendToAppsScript("quiz_finished", { final_type: "disqualified_closed" });
-          closeModal(false);
-          exitSiteByOrigin();
-        });
-      }
-
+      if (btnRecover) btnRecover.addEventListener("click", async () => { pushDataLayerEvent("quiz_recovery_modal_accept", { source_step: "d1" }); await sendToAppsScript("quiz_recovery_modal_accept", { source_step: "d1" }); closeModal(false); state.currentStep = "d2"; render(); });
+      if (btnClose) btnClose.addEventListener("click", async () => { pushDataLayerEvent("quiz_closed_flow", { final_type: "disqualified_closed", origin_detected: state.origin || "" }); await sendToAppsScript("quiz_finished", { final_type: "disqualified_closed" }); closeModal(false); exitSiteByOrigin(); });
       document.addEventListener("keydown", handleEscapeModal);
     }
 
     function closeModal(allowClose = true) {
       if (!state.modalOpen && !modalRoot.innerHTML) return;
-      if (!allowClose && state.modalOpen === false && !modalRoot.innerHTML) return;
       state.modalOpen = false;
       document.body.classList.remove("modal-open");
       modalRoot.innerHTML = "";
       document.removeEventListener("keydown", handleEscapeModal);
     }
-
     function handleEscapeModal(e) { if (e.key === "Escape") closeModal(true); }
 
     function openPrivacyPanel() {
       state.privacyOpen = true;
       document.body.classList.add("privacy-open");
-
       privacyRoot.innerHTML = `
         <div class="privacy-overlay" id="privacyOverlay">
           <div class="privacy-panel" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
@@ -1774,54 +1721,22 @@
               <div class="privacy-title" id="privacyTitle">Política de Privacidade</div>
             </div>
             <div class="privacy-body">
-              <div class="privacy-loading" id="privacyLoading">
-                <div class="privacy-loading-box">
-                  <div class="privacy-spinner" aria-hidden="true"></div>
-                  <div class="privacy-loading-title">Carregando política de privacidade...</div>
-                  <div class="privacy-loading-text">Aguarde só um instante para continuar no formulário.</div>
-                </div>
-              </div>
-
+              <div class="privacy-loading" id="privacyLoading"><div class="privacy-loading-box"><div class="privacy-spinner" aria-hidden="true"></div><div class="privacy-loading-title">Carregando política de privacidade...</div><div class="privacy-loading-text">Aguarde só um instante para continuar no formulário.</div></div></div>
               <iframe id="privacyIframe" class="privacy-iframe" src="${escapeHtml(CONFIG.privacyPolicyUrl)}" title="Política de Privacidade" loading="eager"></iframe>
-
-              <div class="privacy-fallback" id="privacyFallback">
-                <div class="privacy-fallback-box">
-                  <div class="privacy-fallback-title">Não foi possível carregar a política aqui dentro</div>
-                  <div class="privacy-fallback-text">Você continua no formulário normalmente. Toque em voltar para retornar exatamente ao ponto em que estava.</div>
-                  <button type="button" class="button button-outline" id="btnPrivacyFallbackBack">← VOLTAR</button>
-                </div>
-              </div>
+              <div class="privacy-fallback" id="privacyFallback"><div class="privacy-fallback-box"><div class="privacy-fallback-title">Não foi possível carregar a política aqui dentro</div><div class="privacy-fallback-text">Você continua no formulário normalmente. Toque em voltar para retornar exatamente ao ponto em que estava.</div><button type="button" class="button button-outline" id="btnPrivacyFallbackBack">← VOLTAR</button></div></div>
             </div>
           </div>
         </div>
       `;
-
       const iframe = document.getElementById("privacyIframe");
       const btnBack = document.getElementById("btnPrivacyBack");
       const fallback = document.getElementById("privacyFallback");
       const btnFallbackBack = document.getElementById("btnPrivacyFallbackBack");
       const overlay = document.getElementById("privacyOverlay");
       const loading = document.getElementById("privacyLoading");
-
       let iframeLoaded = false;
-
-      const fallbackTimer = setTimeout(() => {
-        if (!iframeLoaded && fallback) {
-          if (loading) loading.classList.add("hide");
-          fallback.classList.add("show");
-        }
-      }, 4500);
-
-      if (iframe) {
-        iframe.addEventListener("load", () => {
-          iframeLoaded = true;
-          clearTimeout(fallbackTimer);
-          if (fallback) fallback.classList.remove("show");
-          if (loading) loading.classList.add("hide");
-          iframe.classList.add("is-loaded");
-        });
-      }
-
+      const fallbackTimer = setTimeout(() => { if (!iframeLoaded && fallback) { if (loading) loading.classList.add("hide"); fallback.classList.add("show"); } }, 4500);
+      if (iframe) iframe.addEventListener("load", () => { iframeLoaded = true; clearTimeout(fallbackTimer); if (fallback) fallback.classList.remove("show"); if (loading) loading.classList.add("hide"); iframe.classList.add("is-loaded"); });
       if (btnBack) btnBack.addEventListener("click", closePrivacyPanel);
       if (btnFallbackBack) btnFallbackBack.addEventListener("click", closePrivacyPanel);
       if (overlay) overlay.addEventListener("click", (e) => { if (e.target === overlay) closePrivacyPanel(); });
@@ -1834,12 +1749,9 @@
       privacyRoot.innerHTML = "";
       document.removeEventListener("keydown", handleEscapePrivacy);
     }
-
     function handleEscapePrivacy(e) { if (e.key === "Escape") closePrivacyPanel(); }
 
-    function buildWhatsAppIconHtml() {
-      return `<img src="${escapeHtml(CONFIG.whatsappIconUrl)}" alt="" class="button-icon" onerror="this.style.display='none'" />`;
-    }
+    function buildWhatsAppIconHtml() { return `<img src="${escapeHtml(CONFIG.whatsappIconUrl)}" alt="" class="button-icon" onerror="this.style.display='none'" />`; }
 
     function openWhatsApp(type) {
       const message = buildWhatsAppMessage(type);
@@ -1852,13 +1764,7 @@
       const lines = [];
       lines.push(`Olá Denver, me chamo *${firstName}.*`);
       lines.push("");
-
-      if (type === "disqualified") {
-        lines.push("Respondi o formulário no site porém não me encaixo nos requisitos do PagBank, mas gostaria de saber mais sobre outras maquininhas.");
-      } else {
-        lines.push("Respondi o formulário no site e gostaria de mais informações sobre o PagBank.");
-      }
-
+      lines.push(type === "disqualified" ? "Respondi o formulário no site porém não me encaixo nos requisitos do PagBank, mas gostaria de saber mais sobre outras maquininhas." : "Respondi o formulário no site e gostaria de mais informações sobre o PagBank.");
       lines.push("");
       if (state.answers.p1) lines.push(`*Mot. Ctt:* ${state.answers.p1}`);
       if (state.answers.p2) lines.push(`*Canal excl.:* ${state.answers.p2}`);
@@ -1867,37 +1773,31 @@
       if (state.answers.p5) lines.push(`*Fat.:* ${state.answers.p5}`);
       if (state.answers.p6) lines.push(`*Qnd pret. comp.:* ${state.answers.p6}`);
       if (state.answers.p7) lines.push(`*Valor disp.:* ${state.answers.p7}`);
-
+      if (state.answers.p4 === "Sim") {
+        lines.push("");
+        lines.push(`*Outro titular informado:* Sim`);
+        if (state.newHolder.cpf) lines.push(`*CPF novo titular:* ${formatCPF(state.newHolder.cpf)}`);
+        if (state.newHolder.hasCnpj === "Sim" && state.newHolder.cnpj) lines.push(`*CNPJ novo titular:* ${formatCNPJ(state.newHolder.cnpj)}`);
+        if (state.newHolder.hasCnpj === "Não") lines.push(`*CNPJ novo titular:* Não possui`);
+      }
       if (type === "disqualified") {
         lines.push("");
         if (state.alternate.cpf) lines.push(`*CPF:* ${formatCPF(state.alternate.cpf)}`);
         if (state.alternate.hasCnpj === "Sim" && state.alternate.cnpj) lines.push(`*CNPJ:* ${formatCNPJ(state.alternate.cnpj)}`);
         else lines.push(`*CNPJ:* Não possui`);
       }
-
       return lines.join("\n");
     }
 
     function validateNome(showError = false) {
       const input = document.getElementById("nome");
       if (!input) return false;
-
       const value = normalizeName(input.value.trim());
       const errorEl = document.getElementById("error-nome");
-      let valid = true;
-      let message = "";
-
-      if (!value || value.length < 2) {
-        valid = false;
-        message = "Digite seu primeiro nome.";
-      } else if (!/^[A-Za-zÀ-ÿ]+$/.test(value)) {
-        valid = false;
-        message = "Use apenas letras no nome.";
-      } else if (!hasValidNameStructure(value)) {
-        valid = false;
-        message = "Digite um primeiro nome válido.";
-      }
-
+      let valid = true, message = "";
+      if (!value || value.length < 2) { valid = false; message = "Digite seu primeiro nome."; }
+      else if (!/^[A-Za-zÀ-ÿ]+$/.test(value)) { valid = false; message = "Use apenas letras no nome."; }
+      else if (!hasValidNameStructure(value)) { valid = false; message = "Digite um primeiro nome válido."; }
       updateInputState(input, valid, value.length > 0);
       setErrorState(errorEl, valid, message, showError);
       return valid;
@@ -1906,33 +1806,17 @@
     function validateWhatsapp(showError = false) {
       const input = document.getElementById("whatsapp");
       if (!input) return false;
-
       const value = normalizeBrazilPhoneInput(input.value);
       const errorEl = document.getElementById("error-whatsapp");
-      let valid = true;
-      let message = "";
-
-      if (!value) {
-        valid = false;
-        message = "Digite seu WhatsApp.";
-      } else if (value.length !== 11) {
-        valid = false;
-        message = "Digite um WhatsApp válido com DDD.";
-      } else {
-        const ddd = value.slice(0, 2);
-        const numero = value.slice(2);
-        if (!DDD_VALIDOS.has(ddd)) {
-          valid = false;
-          message = "Digite um DDD válido.";
-        } else if (/^(\d)\1+$/.test(value) || isStrictSequential(value) || isObviouslyFakePhone(value)) {
-          valid = false;
-          message = "Digite um WhatsApp válido.";
-        } else if (numero.charAt(0) !== "9") {
-          valid = false;
-          message = "Digite um celular válido com 9 após o DDD.";
-        }
+      let valid = true, message = "";
+      if (!value) { valid = false; message = "Digite seu WhatsApp."; }
+      else if (value.length !== 11) { valid = false; message = "Digite um WhatsApp válido com DDD."; }
+      else {
+        const ddd = value.slice(0, 2), numero = value.slice(2);
+        if (!DDD_VALIDOS.has(ddd)) { valid = false; message = "Digite um DDD válido."; }
+        else if (/^(\d)\1+$/.test(value) || isStrictSequential(value) || isObviouslyFakePhone(value)) { valid = false; message = "Digite um WhatsApp válido."; }
+        else if (numero.charAt(0) !== "9") { valid = false; message = "Digite um celular válido com 9 após o DDD."; }
       }
-
       updateInputState(input, valid, value.length > 0);
       setErrorState(errorEl, valid, message, showError);
       return valid;
@@ -1941,37 +1825,21 @@
     function validateEmail(showError = false) {
       const input = document.getElementById("email");
       if (!input) return false;
-
       const value = normalizeEmail(input.value);
       input.value = value;
       const normalized = value.toLowerCase();
       const errorEl = document.getElementById("error-email");
-      let valid = true;
-      let message = "";
-
+      let valid = true, message = "";
       const blockedEmails = new Set(["teste@teste.com", "asd@asd.com", "aaa@aaa.com", "test@test.com", "teste@gmail.com", "email@email.com"]);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-
-      if (!value) {
-        valid = false;
-        message = "Digite seu e-mail.";
-      } else if (!emailRegex.test(value) || blockedEmails.has(normalized) || normalized.includes("..")) {
-        valid = false;
-        message = "Digite um e-mail válido.";
-      } else {
+      if (!value) { valid = false; message = "Digite seu e-mail."; }
+      else if (!emailRegex.test(value) || blockedEmails.has(normalized) || normalized.includes("..")) { valid = false; message = "Digite um e-mail válido."; }
+      else {
         const [localPart = "", domainPart = ""] = normalized.split("@");
-        if (!localPart || !domainPart || !domainPart.includes(".")) {
-          valid = false;
-          message = "Digite um e-mail válido.";
-        } else if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) {
-          valid = false;
-          message = "Digite um e-mail válido.";
-        } else if (isSuspiciousEmail(normalized)) {
-          valid = false;
-          message = "Digite um e-mail válido.";
-        }
+        if (!localPart || !domainPart || !domainPart.includes(".")) { valid = false; message = "Digite um e-mail válido."; }
+        else if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) { valid = false; message = "Digite um e-mail válido."; }
+        else if (isSuspiciousEmail(normalized)) { valid = false; message = "Digite um e-mail válido."; }
       }
-
       updateInputState(input, valid, value.length > 0);
       setErrorState(errorEl, valid, message, showError);
       return valid;
@@ -1980,103 +1848,77 @@
     function validateConsent(showError = false) {
       const errorEl = document.getElementById("error-consent");
       const valid = !!state.lead.consent;
-      const message = "Para continuar, é necessário autorizar o contato pelo WhatsApp ou e-mail.";
-      setErrorState(errorEl, valid, message, showError);
+      setErrorState(errorEl, valid, "Para continuar, é necessário autorizar o contato pelo WhatsApp ou e-mail.", showError);
+      return valid;
+    }
+
+    function validateNewHolderCPFField(showError = false) {
+      const input = document.getElementById("newHolderCpf");
+      if (!input) return false;
+      const value = onlyDigits(input.value).slice(0, 11);
+      state.newHolder.cpf = value;
+      const errorEl = document.getElementById("error-new-holder-cpf");
+      let valid = true, message = "";
+      if (!value) { valid = false; message = "Digite o CPF do novo titular."; }
+      else if (value.length < 11) { valid = false; message = "Digite o CPF completo do novo titular."; }
+      else if (!isAcceptableCPF(value)) { valid = false; message = "Digite um CPF válido."; }
+      updateInputStateSoft(input, valid, value.length > 0, value.length === 11 || showError);
+      setErrorState(errorEl, valid, message, showError || value.length === 11);
+      return valid;
+    }
+
+    function validateNewHolderCNPJField(showError = false) {
+      const input = document.getElementById("newHolderCnpj");
+      if (!input) return false;
+      const value = normalizeCNPJInput(input.value).slice(0, 14);
+      state.newHolder.cnpj = value;
+      const errorEl = document.getElementById("error-new-holder-cnpj");
+      let valid = true, message = "";
+      if (!value) { valid = false; message = "Digite o CNPJ do novo titular."; }
+      else if (value.length < 14) { valid = false; message = "Digite o CNPJ completo do novo titular."; }
+      else if (!isAcceptableCNPJGeneral(value)) { valid = false; message = "Digite um CNPJ válido."; }
+      updateInputStateSoft(input, valid, value.length > 0, value.length === 14 || showError);
+      setErrorState(errorEl, valid, message, showError || value.length === 14);
       return valid;
     }
 
     function validateCPFField(showError = false) {
       const input = document.getElementById("cpf");
       if (!input) return false;
-
       const value = onlyDigits(input.value).slice(0, 11);
       state.alternate.cpf = value;
       const errorEl = document.getElementById("error-cpf");
-      let valid = true;
-      let message = "";
-
-      if (!value) {
-        valid = false;
-        message = "Digite seu CPF.";
-      } else if (value.length < 11) {
-        valid = false;
-        message = "Digite seu CPF completo.";
-      } else if (!isAcceptableCPF(value)) {
-        valid = false;
-        message = "Digite um CPF válido.";
-      }
-
-      const shouldMark = value.length === 11 || showError;
-      updateInputStateSoft(input, valid, value.length > 0, shouldMark);
-      const shouldShow = showError || value.length === 11;
-      setErrorState(errorEl, valid, message, shouldShow);
+      let valid = true, message = "";
+      if (!value) { valid = false; message = "Digite seu CPF."; }
+      else if (value.length < 11) { valid = false; message = "Digite seu CPF completo."; }
+      else if (!isAcceptableCPF(value)) { valid = false; message = "Digite um CPF válido."; }
+      updateInputStateSoft(input, valid, value.length > 0, value.length === 11 || showError);
+      setErrorState(errorEl, valid, message, showError || value.length === 11);
       return valid;
     }
 
     function validateCNPJField(showError = false) {
       const input = document.getElementById("cnpj");
       if (!input) return false;
-
       const value = normalizeCNPJInput(input.value).slice(0, 14);
       state.alternate.cnpj = value;
       const errorEl = document.getElementById("error-cnpj");
-      let valid = true;
-      let message = "";
-
-      if (!value) {
-        valid = false;
-        message = "Digite seu CNPJ.";
-      } else if (value.length < 14) {
-        valid = false;
-        message = "Digite seu CNPJ completo.";
-      } else if (!isAcceptableCNPJGeneral(value)) {
-        valid = false;
-        message = "Digite um CNPJ válido.";
-      }
-
-      const shouldMark = value.length === 14 || showError;
-      updateInputStateSoft(input, valid, value.length > 0, shouldMark);
-      const shouldShow = showError || value.length === 14;
-      setErrorState(errorEl, valid, message, shouldShow);
+      let valid = true, message = "";
+      if (!value) { valid = false; message = "Digite seu CNPJ."; }
+      else if (value.length < 14) { valid = false; message = "Digite seu CNPJ completo."; }
+      else if (!isAcceptableCNPJGeneral(value)) { valid = false; message = "Digite um CNPJ válido."; }
+      updateInputStateSoft(input, valid, value.length > 0, value.length === 14 || showError);
+      setErrorState(errorEl, valid, message, showError || value.length === 14);
       return valid;
     }
 
-    function setErrorState(errorEl, valid, message, showError) {
-      if (!errorEl) return;
-      if (!showError) {
-        errorEl.textContent = "";
-        errorEl.classList.remove("show");
-        return;
-      }
-      if (valid) {
-        errorEl.textContent = "";
-        errorEl.classList.remove("show");
-      } else {
-        errorEl.textContent = message;
-        errorEl.classList.add("show");
-      }
-    }
-
-    function updateInputState(input, valid, hasValue) {
-      if (!input) return;
-      input.classList.remove("valid", "invalid");
-      if (!hasValue) return;
-      if (valid) input.classList.add("valid");
-      else input.classList.add("invalid");
-    }
-
-    function updateInputStateSoft(input, valid, hasValue, shouldMark) {
-      if (!input) return;
-      input.classList.remove("valid", "invalid");
-      if (!hasValue || !shouldMark) return;
-      if (valid) input.classList.add("valid");
-      else input.classList.add("invalid");
-    }
+    function setErrorState(errorEl, valid, message, showError) { if (!errorEl) return; if (!showError || valid) { errorEl.textContent = ""; errorEl.classList.remove("show"); } else { errorEl.textContent = message; errorEl.classList.add("show"); } }
+    function updateInputState(input, valid, hasValue) { if (!input) return; input.classList.remove("valid", "invalid"); if (!hasValue) return; input.classList.add(valid ? "valid" : "invalid"); }
+    function updateInputStateSoft(input, valid, hasValue, shouldMark) { if (!input) return; input.classList.remove("valid", "invalid"); if (!hasValue || !shouldMark) return; input.classList.add(valid ? "valid" : "invalid"); }
 
     function getLeadAdvanceStatus() {
       const fieldsValid = isLeadNameValidValue(state.lead.nome) && isLeadWhatsappValidValue(state.lead.whatsapp) && isLeadEmailValidValue(state.lead.email);
       const canSubmit = fieldsValid && !!state.lead.consent;
-
       if (canSubmit) return { stepReady: true, canSubmit: true, showProgress: false, buttonClass: "button-lead-active" };
       if (fieldsValid && !state.lead.consent) return { stepReady: true, canSubmit: false, showProgress: true, buttonClass: "button-lead-waiting" };
       return { stepReady: false, canSubmit: false, showProgress: false, buttonClass: "button-lead-disabled" };
@@ -2086,7 +1928,6 @@
       const btn = document.getElementById("btnNextLead");
       const consentBox = document.querySelector(".consent-box");
       if (!btn) return;
-
       const leadStatus = getLeadAdvanceStatus();
       btn.disabled = !leadStatus.canSubmit;
       btn.className = `button ${leadStatus.buttonClass}`;
@@ -2097,18 +1938,11 @@
     function maybeAdvanceFromWhatsappToEmail() {
       const emailInput = document.getElementById("email");
       const normalizedPhone = normalizeBrazilPhoneInput(state.lead.whatsapp);
-      if (!isLeadWhatsappValidValue(normalizedPhone)) {
-        whatsappAutoAdvanced = false;
-        return;
-      }
+      if (!isLeadWhatsappValidValue(normalizedPhone)) { whatsappAutoAdvanced = false; return; }
       if (whatsappAutoAdvanced || !emailInput) return;
       if (document.activeElement && document.activeElement.id !== "whatsapp") return;
       whatsappAutoAdvanced = true;
-      setTimeout(() => {
-        emailInput.focus();
-        const end = emailInput.value.length;
-        emailInput.setSelectionRange(end, end);
-      }, 80);
+      setTimeout(() => { emailInput.focus(); const end = emailInput.value.length; emailInput.setSelectionRange(end, end); }, 80);
     }
 
     function isLeadNameValidValue(value) {
@@ -2117,12 +1951,10 @@
       if (!/^[A-Za-zÀ-ÿ]+$/.test(normalized)) return false;
       return hasValidNameStructure(normalized);
     }
-
     function isLeadWhatsappValidValue(value) {
       const clean = normalizeBrazilPhoneInput(value || "");
       if (!clean || clean.length !== 11) return false;
-      const ddd = clean.slice(0, 2);
-      const numero = clean.slice(2);
+      const ddd = clean.slice(0, 2), numero = clean.slice(2);
       if (!DDD_VALIDOS.has(ddd)) return false;
       if (/^(\d)\1+$/.test(clean)) return false;
       if (isStrictSequential(clean)) return false;
@@ -2130,15 +1962,12 @@
       if (isObviouslyFakePhone(clean)) return false;
       return true;
     }
-
     function isLeadEmailValidValue(value) {
       const normalized = normalizeEmail(value || "");
       if (!normalized) return false;
       const blockedEmails = new Set(["teste@teste.com", "asd@asd.com", "aaa@aaa.com", "test@test.com", "teste@gmail.com", "email@email.com"]);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-      if (!emailRegex.test(normalized)) return false;
-      if (blockedEmails.has(normalized)) return false;
-      if (normalized.includes("..")) return false;
+      if (!emailRegex.test(normalized) || blockedEmails.has(normalized) || normalized.includes("..")) return false;
       const [localPart = "", domainPart = ""] = normalized.split("@");
       if (!localPart || !domainPart || !domainPart.includes(".")) return false;
       if (/^(.)\1{4,}$/.test(localPart.replace(/[.\-_]/g, ""))) return false;
@@ -2146,22 +1975,12 @@
       return true;
     }
 
-    function normalizeBrazilPhoneInput(value) {
-      let digits = onlyDigits(value);
-      if (digits.startsWith("00")) digits = digits.slice(2);
-      if (digits.length >= 12 && digits.startsWith("55")) digits = digits.slice(2);
-      if (digits.length > 11) digits = digits.slice(0, 11);
-      return digits;
-    }
-
+    function normalizeBrazilPhoneInput(value) { let digits = onlyDigits(value); if (digits.startsWith("00")) digits = digits.slice(2); if (digits.length >= 12 && digits.startsWith("55")) digits = digits.slice(2); if (digits.length > 11) digits = digits.slice(0, 11); return digits; }
     function handleWhatsAppKeydown(e) {
-      const input = e.target;
-      if (!input || e.key !== "Backspace") return;
-      const start = input.selectionStart ?? 0;
-      const end = input.selectionEnd ?? 0;
+      const input = e.target; if (!input || e.key !== "Backspace") return;
+      const start = input.selectionStart ?? 0, end = input.selectionEnd ?? 0;
       if (start !== end) return;
-      const formatted = input.value || "";
-      const raw = normalizeBrazilPhoneInput(state.lead.whatsapp || formatted);
+      const formatted = input.value || "", raw = normalizeBrazilPhoneInput(state.lead.whatsapp || formatted);
       if (!formatted || start <= 0) return;
       const previousChar = formatted.charAt(start - 1);
       if (/\D/.test(previousChar)) {
@@ -2180,7 +1999,6 @@
         updateLeadButtonState();
       }
     }
-
     function handleWhatsAppInput(e) {
       const input = e.target;
       let digits = normalizeBrazilPhoneInput(input.value);
@@ -2193,63 +2011,19 @@
       input.setSelectionRange(nextCaret, nextCaret);
       if (digits.length < 11) whatsappAutoAdvanced = false;
     }
-
     function countDigits(value) { return String(value || "").replace(/\D/g, "").length; }
-
     function getCaretPositionFromDigitIndex(formattedValue, digitIndex) {
-      if (digitIndex <= 0) {
-        const firstDigitPos = String(formattedValue || "").search(/\d/);
-        return firstDigitPos === -1 ? 0 : firstDigitPos;
-      }
-      let seen = 0;
-      const text = String(formattedValue || "");
-      for (let i = 0; i < text.length; i++) {
-        if (/\d/.test(text.charAt(i))) {
-          seen++;
-          if (seen >= digitIndex) return i + 1;
-        }
-      }
+      if (digitIndex <= 0) { const firstDigitPos = String(formattedValue || "").search(/\d/); return firstDigitPos === -1 ? 0 : firstDigitPos; }
+      let seen = 0; const text = String(formattedValue || "");
+      for (let i = 0; i < text.length; i++) { if (/\d/.test(text.charAt(i))) { seen++; if (seen >= digitIndex) return i + 1; } }
       return text.length;
     }
-
-    function handleNameInputFormat(e) {
-      const raw = String(e.target.value || "");
-      const digitsRemoved = raw.replace(/\d/g, "");
-      const noExtraSpaces = digitsRemoved.replace(/\s+/g, " ");
-      const onlyFirstWord = noExtraSpaces.trim().split(" ")[0] || "";
-      const onlyLetters = onlyFirstWord.replace(/[^A-Za-zÀ-ÿ]/g, "");
-      e.target.value = capitalizeWord(onlyLetters);
-    }
-
-    function normalizeName(value) {
-      const firstWord = String(value || "")
-        .replace(/\d/g, "")
-        .replace(/[^A-Za-zÀ-ÿ\s]/g, "")
-        .replace(/\s+/g, " ")
-        .trim()
-        .split(" ")
-        .filter(Boolean)[0] || "";
-      return capitalizeWord(firstWord);
-    }
-
-    function normalizeEmail(value) {
-      return String(value || "").replace(/\s+/g, "").toLowerCase().trim();
-    }
-
-    function normalizeCNPJInput(value) {
-      return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14);
-    }
-
-    function capitalizeWord(word) {
-      const clean = String(word || "").toLowerCase();
-      return clean.charAt(0).toUpperCase() + clean.slice(1);
-    }
-
-    function getFirstName(value) {
-      const normalized = normalizeName(value);
-      return normalized || "por aqui";
-    }
-
+    function handleNameInputFormat(e) { const raw = String(e.target.value || ""); const onlyLetters = raw.replace(/\d/g, "").replace(/\s+/g, " ").trim().split(" ")[0]?.replace(/[^A-Za-zÀ-ÿ]/g, "") || ""; e.target.value = capitalizeWord(onlyLetters); }
+    function normalizeName(value) { const firstWord = String(value || "").replace(/\d/g, "").replace(/[^A-Za-zÀ-ÿ\s]/g, "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean)[0] || ""; return capitalizeWord(firstWord); }
+    function normalizeEmail(value) { return String(value || "").replace(/\s+/g, "").toLowerCase().trim(); }
+    function normalizeCNPJInput(value) { return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14); }
+    function capitalizeWord(word) { const clean = String(word || "").toLowerCase(); return clean.charAt(0).toUpperCase() + clean.slice(1); }
+    function getFirstName(value) { const normalized = normalizeName(value); return normalized || "por aqui"; }
     function hasValidNameStructure(name) {
       const clean = String(name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
       const blockedExact = new Set(["teste","teste1","admin","nome","usuario","user","asdf","asdfg","qwer","qwert","qwerty","zxcv","zxcvb","zxcvbn","abc","abcd","kkk","kkkk","aaaa","bbbb","cccc","xxxxx","xxx","nao","nada","fake","fulano","ciclano"]);
@@ -2265,68 +2039,14 @@
       if (/[bcdfghjklmnpqrstvwxyz]{5,}/i.test(clean)) return false;
       return true;
     }
-
-    function isAcceptableCPF(cpf) {
-      const clean = onlyDigits(cpf);
-      if (!clean || clean.length !== 11) return false;
-      if (/^(\d)\1{10}$/.test(clean)) return false;
-      return true;
-    }
-
-    function isAcceptableCNPJGeneral(cnpj) {
-      const clean = normalizeCNPJInput(cnpj);
-      if (!clean || clean.length !== 14) return false;
-      if (/^([A-Z0-9])\1{13}$/.test(clean)) return false;
-      return true;
-    }
-
-    function formatPhone(value) {
-      const digits = onlyDigits(value).slice(0, 11);
-      if (!digits) return "";
-      if (digits.length <= 2) return `(${digits}`;
-      if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-    }
-
-    function formatCPF(value) {
-      const digits = onlyDigits(value).slice(0, 11);
-      if (digits.length <= 3) return digits;
-      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
-    }
-
-    function formatCNPJ(value) {
-      const clean = normalizeCNPJInput(value);
-      if (clean.length <= 2) return clean;
-      if (clean.length <= 5) return `${clean.slice(0, 2)}.${clean.slice(2)}`;
-      if (clean.length <= 8) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5)}`;
-      if (clean.length <= 12) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8)}`;
-      return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8, 12)}-${clean.slice(12, 14)}`;
-    }
-
+    function isAcceptableCPF(cpf) { const clean = onlyDigits(cpf); return !!clean && clean.length === 11 && !/^(\d)\1{10}$/.test(clean); }
+    function isAcceptableCNPJGeneral(cnpj) { const clean = normalizeCNPJInput(cnpj); return !!clean && clean.length === 14 && !/^([A-Z0-9])\1{13}$/.test(clean); }
+    function formatPhone(value) { const digits = onlyDigits(value).slice(0, 11); if (!digits) return ""; if (digits.length <= 2) return `(${digits}`; if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`; if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`; return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`; }
+    function formatCPF(value) { const digits = onlyDigits(value).slice(0, 11); if (digits.length <= 3) return digits; if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`; if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`; return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`; }
+    function formatCNPJ(value) { const clean = normalizeCNPJInput(value); if (clean.length <= 2) return clean; if (clean.length <= 5) return `${clean.slice(0, 2)}.${clean.slice(2)}`; if (clean.length <= 8) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5)}`; if (clean.length <= 12) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8)}`; return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8, 12)}-${clean.slice(12, 14)}`; }
     function onlyDigits(value) { return String(value || "").replace(/\D/g, ""); }
-
-    function isStrictSequential(value) {
-      const asc = "01234567890";
-      const desc = "09876543210";
-      for (let i = 0; i <= asc.length - value.length; i++) {
-        if (asc.slice(i, i + value.length) === value) return true;
-      }
-      for (let i = 0; i <= desc.length - value.length; i++) {
-        if (desc.slice(i, i + value.length) === value) return true;
-      }
-      return false;
-    }
-
-    function isObviouslyFakePhone(value) {
-      const numero = value.slice(2);
-      if (/^(123456789|987654321)$/.test(numero)) return true;
-      if (/^(000000000|111111111|222222222|333333333|444444444|555555555|666666666|777777777|888888888|999999999)$/.test(numero)) return true;
-      return false;
-    }
-
+    function isStrictSequential(value) { const asc = "01234567890", desc = "09876543210"; for (let i = 0; i <= asc.length - value.length; i++) { if (asc.slice(i, i + value.length) === value) return true; } for (let i = 0; i <= desc.length - value.length; i++) { if (desc.slice(i, i + value.length) === value) return true; } return false; }
+    function isObviouslyFakePhone(value) { const numero = value.slice(2); return /^(123456789|987654321)$/.test(numero) || /^(000000000|111111111|222222222|333333333|444444444|555555555|666666666|777777777|888888888|999999999)$/.test(numero); }
     function getEmailSuggestions(value) {
       const normalized = normalizeEmail(value);
       if (!normalized || !normalized.includes("@")) return [];
@@ -2336,217 +2056,72 @@
       if (!localPart || normalized.split("@").length > 2 || !typedDomain) return [];
       const firstLetter = typedDomain.charAt(0);
       const possibleDomains = EMAIL_DOMAIN_GROUPS[firstLetter] || [];
-      return possibleDomains
-        .filter((domain) => domain.startsWith(typedDomain) && domain !== typedDomain)
-        .map((domain) => {
-          const missingPart = domain.slice(typedDomain.length);
-          return {
-            fullEmail: `${localPart}@${domain}`,
-            previewHtml: `${escapeHtml(localPart)}@${escapeHtml(typedDomain)}<strong>${escapeHtml(missingPart)}</strong>`
-          };
-        });
-    }
-
-    function renderEmailSuggestions() {
-      const container = document.getElementById("emailSuggestions");
-      const emailInput = document.getElementById("email");
-      if (!container || !emailInput) return;
-      const suggestions = getEmailSuggestions(emailInput.value);
-      if (!suggestions.length) {
-        container.innerHTML = "";
-        container.classList.add("hidden");
-        return;
-      }
-      container.innerHTML = suggestions.map((suggestion) => `
-        <button type="button" class="email-suggestion-item" data-email-suggestion="${escapeHtml(suggestion.fullEmail)}" aria-label="Completar com ${escapeHtml(suggestion.fullEmail)}">
-          ${suggestion.previewHtml}
-        </button>
-      `).join("");
-      container.classList.remove("hidden");
-      container.querySelectorAll("[data-email-suggestion]").forEach((btn) => {
-        btn.addEventListener("mousedown", (e) => e.preventDefault());
-        btn.addEventListener("click", () => applyEmailSuggestion(btn.getAttribute("data-email-suggestion")));
+      return possibleDomains.filter((domain) => domain.startsWith(typedDomain) && domain !== typedDomain).map((domain) => {
+        const missingPart = domain.slice(typedDomain.length);
+        return { fullEmail: `${localPart}@${domain}`, previewHtml: `${escapeHtml(localPart)}@${escapeHtml(typedDomain)}<strong>${escapeHtml(missingPart)}</strong>` };
       });
     }
-
-    function applyEmailSuggestion(fullEmail) {
-      const emailInput = document.getElementById("email");
-      if (!emailInput || !fullEmail) return;
-      const normalizedEmail = normalizeEmail(fullEmail);
-      emailInput.value = normalizedEmail;
-      state.lead.email = normalizedEmail;
-      validateEmail(false);
-      hideEmailSuggestions();
-      updateLeadButtonState();
-      emailInput.focus();
-      const end = emailInput.value.length;
-      emailInput.setSelectionRange(end, end);
+    function renderEmailSuggestions() {
+      const container = document.getElementById("emailSuggestions"), emailInput = document.getElementById("email");
+      if (!container || !emailInput) return;
+      const suggestions = getEmailSuggestions(emailInput.value);
+      if (!suggestions.length) { container.innerHTML = ""; container.classList.add("hidden"); return; }
+      container.innerHTML = suggestions.map((suggestion) => `<button type="button" class="email-suggestion-item" data-email-suggestion="${escapeHtml(suggestion.fullEmail)}" aria-label="Completar com ${escapeHtml(suggestion.fullEmail)}">${suggestion.previewHtml}</button>`).join("");
+      container.classList.remove("hidden");
+      container.querySelectorAll("[data-email-suggestion]").forEach((btn) => { btn.addEventListener("mousedown", (e) => e.preventDefault()); btn.addEventListener("click", () => applyEmailSuggestion(btn.getAttribute("data-email-suggestion"))); });
     }
-
-    function hideEmailSuggestions() {
-      const container = document.getElementById("emailSuggestions");
-      if (!container) return;
-      container.innerHTML = "";
-      container.classList.add("hidden");
-    }
-
+    function applyEmailSuggestion(fullEmail) { const emailInput = document.getElementById("email"); if (!emailInput || !fullEmail) return; const normalizedEmail = normalizeEmail(fullEmail); emailInput.value = normalizedEmail; state.lead.email = normalizedEmail; validateEmail(false); hideEmailSuggestions(); updateLeadButtonState(); emailInput.focus(); const end = emailInput.value.length; emailInput.setSelectionRange(end, end); }
+    function hideEmailSuggestions() { const container = document.getElementById("emailSuggestions"); if (!container) return; container.innerHTML = ""; container.classList.add("hidden"); }
     function isSuspiciousEmail(email) {
       const normalized = normalizeEmail(email);
       const [localPart = "", domainPart = ""] = normalized.split("@");
       if (!localPart || !domainPart) return true;
       if (TRUSTED_EMAIL_DOMAINS.has(domainPart)) return false;
-
       const localClean = localPart.replace(/[.\-_]/g, "");
       const domainLabels = domainPart.split(".");
       const rootDomain = domainLabels.length >= 2 ? domainLabels[domainLabels.length - 2] : domainPart;
       const tld = domainLabels[domainLabels.length - 1] || "";
-
       if (tld.length < 2) return true;
       if (/^\d+$/.test(rootDomain)) return true;
       if (/^(.)\1+$/.test(rootDomain)) return true;
-
-      if (rootDomain.length >= 6) {
-        const vowels = (rootDomain.match(/[aeiou]/g) || []).length;
-        if (vowels <= 1) return true;
-      }
-
+      if (rootDomain.length >= 6) { const vowels = (rootDomain.match(/[aeiou]/g) || []).length; if (vowels <= 1) return true; }
       if (/^[bcdfghjklmnpqrstvwxyz]{5,}$/i.test(rootDomain)) return true;
-
-      const localLooksRandom = looksRandomToken(localClean);
-      const rootLooksRandom = looksRandomToken(rootDomain);
-
+      const localLooksRandom = looksRandomToken(localClean), rootLooksRandom = looksRandomToken(rootDomain);
       if (localClean.length <= 3 && rootDomain.length <= 5 && !TRUSTED_EMAIL_DOMAINS.has(domainPart)) return true;
       if (localLooksRandom && rootLooksRandom) return true;
       if (!/[aeiou]/i.test(rootDomain) && rootDomain.length <= 6) return true;
       return false;
     }
-
-    function looksRandomToken(token) {
-      const clean = String(token || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-      if (!clean) return true;
-      if (clean.length < 3) return true;
-      if (/^\d+$/.test(clean)) return true;
-      if (/^(.)\1+$/.test(clean)) return true;
-      const vowels = (clean.match(/[aeiou]/g) || []).length;
-      const uniqueChars = new Set(clean.split("")).size;
-      if (clean.length <= 6 && vowels <= 1 && uniqueChars >= 3) return true;
-      if (/^[bcdfghjklmnpqrstvwxyz]{5,}$/i.test(clean)) return true;
-      return false;
-    }
-
-    function captureUTMs() {
-      const params = new URLSearchParams(window.location.search);
-      state.utms = {
-        utm_source: params.get("utm_source") || "",
-        utm_medium: params.get("utm_medium") || "",
-        utm_campaign: params.get("utm_campaign") || "",
-        utm_content: params.get("utm_content") || "",
-        utm_term: params.get("utm_term") || "",
-        fbclid: params.get("fbclid") || "",
-        gclid: params.get("gclid") || "",
-        ttclid: params.get("ttclid") || ""
-      };
-    }
-
-    function detectOrigin() {
-      const ref = (document.referrer || "").toLowerCase();
-      state.origin = ref;
-      sessionStorage.setItem("quiz_referrer", ref);
-    }
-
-    function exitSiteByOrigin() {
-      const ref = sessionStorage.getItem("quiz_referrer") || state.origin || "";
-      if (window.history.length > 1) {
-        history.back();
-        setTimeout(() => fallbackExit(ref), 900);
-        return;
-      }
-      fallbackExit(ref);
-    }
-
-    function fallbackExit(ref) {
-      const origin = String(ref || "").toLowerCase();
-      const utmSource = String(state.utms.utm_source || "").toLowerCase();
-      if (origin.includes("instagram") || utmSource.includes("instagram")) return window.location.href = "https://www.instagram.com/";
-      if (origin.includes("facebook") || origin.includes("fb") || utmSource.includes("facebook")) return window.location.href = "https://www.facebook.com/";
-      if (origin.includes("tiktok") || utmSource.includes("tiktok")) return window.location.href = "https://www.tiktok.com/";
-      if (origin.includes("google") || utmSource.includes("google")) return window.location.href = "https://www.google.com/";
-      window.location.href = "about:blank";
-    }
-
+    function looksRandomToken(token) { const clean = String(token || "").toLowerCase().replace(/[^a-z0-9]/g, ""); if (!clean || clean.length < 3 || /^\d+$/.test(clean) || /^(.)\1+$/.test(clean)) return true; const vowels = (clean.match(/[aeiou]/g) || []).length; const uniqueChars = new Set(clean.split("")).size; if (clean.length <= 6 && vowels <= 1 && uniqueChars >= 3) return true; if (/^[bcdfghjklmnpqrstvwxyz]{5,}$/i.test(clean)) return true; return false; }
+    function captureUTMs() { const params = new URLSearchParams(window.location.search); state.utms = { utm_source: params.get("utm_source") || "", utm_medium: params.get("utm_medium") || "", utm_campaign: params.get("utm_campaign") || "", utm_content: params.get("utm_content") || "", utm_term: params.get("utm_term") || "", fbclid: params.get("fbclid") || "", gclid: params.get("gclid") || "", ttclid: params.get("ttclid") || "" }; }
+    function detectOrigin() { const ref = (document.referrer || "").toLowerCase(); state.origin = ref; sessionStorage.setItem("quiz_referrer", ref); }
+    function exitSiteByOrigin() { const ref = sessionStorage.getItem("quiz_referrer") || state.origin || ""; if (window.history.length > 1) { history.back(); setTimeout(() => fallbackExit(ref), 900); return; } fallbackExit(ref); }
+    function fallbackExit(ref) { const origin = String(ref || "").toLowerCase(), utmSource = String(state.utms.utm_source || "").toLowerCase(); if (origin.includes("instagram") || utmSource.includes("instagram")) return window.location.href = "https://www.instagram.com/"; if (origin.includes("facebook") || origin.includes("fb") || utmSource.includes("facebook")) return window.location.href = "https://www.facebook.com/"; if (origin.includes("tiktok") || utmSource.includes("tiktok")) return window.location.href = "https://www.tiktok.com/"; if (origin.includes("google") || utmSource.includes("google")) return window.location.href = "https://www.google.com/"; window.location.href = "about:blank"; }
     function pushDataLayerEvent(eventName, extra = {}) {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: eventName,
-        nome: state.lead.nome || "",
-        whatsapp: state.lead.whatsapp || "",
-        email: state.lead.email || "",
-        consent: state.lead.consent ? "sim" : "nao",
-        p1: state.answers.p1 || "",
-        p2: state.answers.p2 || "",
-        p3: state.answers.p3 || "",
-        p4: state.answers.p4 || "",
-        p5: state.answers.p5 || "",
-        p6: state.answers.p6 || "",
-        p7: state.answers.p7 || "",
-        cpf: state.alternate.cpf || "",
-        has_cnpj: state.alternate.hasCnpj || "",
-        cnpj: state.alternate.cnpj || "",
-        ...state.utms,
-        ...extra
-      });
+      window.dataLayer.push({ event: eventName, nome: state.lead.nome || "", whatsapp: state.lead.whatsapp || "", email: state.lead.email || "", consent: state.lead.consent ? "sim" : "nao", p1: state.answers.p1 || "", p2: state.answers.p2 || "", p3: state.answers.p3 || "", p4: state.answers.p4 || "", p5: state.answers.p5 || "", p6: state.answers.p6 || "", p7: state.answers.p7 || "", new_holder_cpf: state.newHolder.cpf || "", new_holder_has_cnpj: state.newHolder.hasCnpj || "", new_holder_cnpj: state.newHolder.cnpj || "", cpf: state.alternate.cpf || "", has_cnpj: state.alternate.hasCnpj || "", cnpj: state.alternate.cnpj || "", ...state.utms, ...extra });
     }
-
     async function sendToAppsScript(eventType, extra = {}) {
       if (!CONFIG.appsScriptUrl) return;
-      const payload = {
-        event_type: eventType,
-        timestamp: new Date().toISOString(),
-        nome: state.lead.nome || "",
-        whatsapp: state.lead.whatsapp || "",
-        email: state.lead.email || "",
-        consent: state.lead.consent ? "sim" : "nao",
-        p1: state.answers.p1 || "",
-        p2: state.answers.p2 || "",
-        p3: state.answers.p3 || "",
-        p4: state.answers.p4 || "",
-        p5: state.answers.p5 || "",
-        p6: state.answers.p6 || "",
-        p7: state.answers.p7 || "",
-        cpf: state.alternate.cpf || "",
-        has_cnpj: state.alternate.hasCnpj || "",
-        cnpj: state.alternate.cnpj || "",
-        final_type: state.finalType || "",
-        page_url: window.location.href,
-        user_agent: navigator.userAgent,
-        referrer: state.origin || "",
-        ...state.utms,
-        ...extra
-      };
+      const payload = { event_type: eventType, timestamp: new Date().toISOString(), nome: state.lead.nome || "", whatsapp: state.lead.whatsapp || "", email: state.lead.email || "", consent: state.lead.consent ? "sim" : "nao", p1: state.answers.p1 || "", p2: state.answers.p2 || "", p3: state.answers.p3 || "", p4: state.answers.p4 || "", p5: state.answers.p5 || "", p6: state.answers.p6 || "", p7: state.answers.p7 || "", new_holder_cpf: state.newHolder.cpf || "", new_holder_has_cnpj: state.newHolder.hasCnpj || "", new_holder_cnpj: state.newHolder.cnpj || "", cpf: state.alternate.cpf || "", has_cnpj: state.alternate.hasCnpj || "", cnpj: state.alternate.cnpj || "", final_type: state.finalType || "", origin: state.origin || "", ...state.utms, ...extra };
       try {
-        await fetch(CONFIG.appsScriptUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+        await fetch(CONFIG.appsScriptUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       } catch (error) {
-        console.error("Apps Script send failed:", error);
+        console.error("Erro ao enviar Apps Script:", error);
       }
     }
 
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     captureUTMs();
     detectOrigin();
-    pushDataLayerEvent("quiz_start");
     render();
   </script>
 </body>
